@@ -16,7 +16,7 @@ function(SetLibs)
 endfunction()
 
 function(Build)
-  add_library(${PROJECT_NAME} STATIC iobase.cpp)
+  add_library(${PROJECT_NAME} STATIC iobase.cpp xba.cpp)
   setincludes()
   setlibs()
 endfunction()
