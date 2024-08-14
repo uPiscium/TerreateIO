@@ -36,10 +36,19 @@ struct StringBuffer {
   Byte *GetCursor() { return cursor; }
   Byte const *GetCursor() const { return cursor; }
 
+  void SetTop(Byte *top) { this->top = top; }
+  void SetBottom(Byte *bottom) { this->bottom = bottom; }
+  void SetCursor(Byte *cursor) { this->cursor = cursor; }
+
   void LoadBuffer(Byte const *buffer, Size const &size);
   void ClearBuffer() { std::memset(buffer, 0, capacity); }
+  void ResetCursor() { cursor = top; }
   StringBuffer Copy();
   StringBufferRef Ref();
+
+  StringBuffer &operator=(StringBuffer const &other);
+  StringBuffer &operator=(StringBuffer &&other);
+  StringBuffer &operator=(Str const &str);
 };
 
 struct StringBufferRef : public StringBuffer {

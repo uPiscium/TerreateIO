@@ -22,6 +22,11 @@ public:
   FileIOError(Str const &msg) : TerreateIOException(msg) {}
 };
 
+class StringBufferError : public TerreateIOException {
+public:
+  StringBufferError(Str const &msg) : TerreateIOException(msg) {}
+};
+
 } // namespace TerreateIO::Exception
 
 #endif // __TERREATEIO_EXCEPTIONS_HPP__

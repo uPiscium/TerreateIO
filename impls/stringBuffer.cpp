@@ -91,4 +91,42 @@ StringBufferRef StringBuffer::Ref() {
   return ref;
 }
 
+StringBuffer &StringBuffer::operator=(StringBuffer const &other) {
+  if (this->buffer != nullptr) {
+    delete[] this->buffer;
+  }
+  this->capacity = other.capacity;
+  this->buffer = new Byte[this->capacity];
+  std::memcpy(this->buffer, other.buffer, this->capacity);
+  this->top = other.top;
+  this->bottom = other.bottom;
+  this->cursor = other.cursor;
+  return *this;
+}
+
+StringBuffer &StringBuffer::operator=(StringBuffer &&other) {
+  if (this->buffer != nullptr) {
+    delete[] this->buffer;
+  }
+  this->capacity = other.capacity;
+  this->buffer = other.buffer;
+  this->top = other.top;
+  this->bottom = other.bottom;
+  this->cursor = other.cursor;
+  return *this;
+}
+
+StringBuffer &StringBuffer::operator=(Str const &str) {
+  if (this->buffer != nullptr) {
+    delete[] this->buffer;
+  }
+  this->capacity = str.size() + 1;
+  this->buffer = new Byte[this->capacity];
+  this->buffer[this->capacity - 1] = '\0';
+  this->top = &this->buffer[0];
+  this->bottom = &this->buffer[this->capacity - 1];
+  this->cursor = this->top;
+  return *this;
+}
+
 } // namespace TerreateIO::Buffer
