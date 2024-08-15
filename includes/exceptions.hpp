@@ -27,6 +27,16 @@ public:
   StringBufferError(Str const &msg) : TerreateIOException(msg) {}
 };
 
+class ParserError : public TerreateIOException {
+public:
+  ParserError(Str const &msg) : TerreateIOException(msg) {}
+};
+
+class JsonError : public ParserError {
+public:
+  JsonError(Str const &msg) : ParserError(msg) {}
+};
+
 } // namespace TerreateIO::Exception
 
 #endif // __TERREATEIO_EXCEPTIONS_HPP__
