@@ -1,10 +1,12 @@
-#include "../includes/io.hpp"
+#include "../includes/buffer.hpp"
+
 #include <iostream>
 
-using namespace TerreateIO::IO;
+using namespace TerreateIO;
 
 int main() {
-  StringBuffer buffer("Hello, World!");
-  std::cout << buffer.GetSize() << std::endl;
-  return 0;
+  Buffer::WriteBuffer wb;
+  wb.Write((unsigned)1000);
+  Buffer::ReadBuffer rb(wb.Dump());
+  std::cout << rb.Read<int>() << std::endl;
 }
