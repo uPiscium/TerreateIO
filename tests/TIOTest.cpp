@@ -1,12 +1,12 @@
-#include "../includes/buffer.hpp"
+#include "../includes/TeerreateIO.hpp"
 
 #include <iostream>
 
 using namespace TerreateIO;
 
 int main() {
-  Buffer::WriteBuffer wb;
-  wb.Write((unsigned)1000);
-  Buffer::ReadBuffer rb(wb.Dump());
-  std::cout << rb.Read<int>() << std::endl;
+  Buffer::ReadBuffer buffer =
+      Parser::ParserBase::LoadFile("tests/resources/testFile.txt");
+  std::cout << buffer.GetSize() << std::endl;
+  std::cout << buffer.Read(buffer.GetSize()) << std::endl;
 }

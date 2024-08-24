@@ -25,6 +25,12 @@ public:
   BufferException(const std::string &message) : TerreateIOException(message) {}
 };
 
+class ParserException : public TerreateIOException {
+public:
+  ParserException(const char *message) : TerreateIOException(message) {}
+  ParserException(const std::string &message) : TerreateIOException(message) {}
+};
+
 } // namespace TerreateIO::Exception
 
 #endif // __TERRATEIO_EXCEPTIONS_HPP__
