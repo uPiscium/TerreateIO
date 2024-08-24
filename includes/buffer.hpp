@@ -32,6 +32,12 @@ public:
   }
   ~ReadBuffer() override;
 
+  Byte *GetBuffer() { return mBuffer; }
+  Byte const *GetBuffer() const { return mBuffer; }
+  Byte *GetCursor() { return mCursor; }
+  Byte const *GetCursor() const { return mCursor; }
+  Size const &GetSize() const { return mSize; }
+
   Str Fetch(Size const &size = 1u);
   Str Read(Size const &size = 1u);
   template <typename T> T Read() {
