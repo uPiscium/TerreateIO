@@ -6,13 +6,14 @@
 #include "defines.hpp"
 
 namespace TerreateIO::Exception {
+using namespace TerreateIO::Defines;
+
 class TerreateIOException : public std::exception {
 private:
-  std::string mMessage;
+  Str mMessage;
 
 public:
-  TerreateIOException(const char *message) : mMessage(message) {}
-  TerreateIOException(const std::string &message) : mMessage(message) {}
+  TerreateIOException(Str const &message) : mMessage(message) {}
 
   virtual const char *what() const noexcept override {
     return mMessage.c_str();
@@ -21,14 +22,17 @@ public:
 
 class BufferException : public TerreateIOException {
 public:
-  BufferException(const char *message) : TerreateIOException(message) {}
-  BufferException(const std::string &message) : TerreateIOException(message) {}
+  BufferException(Str const &message) : TerreateIOException(message) {}
 };
 
 class ParserException : public TerreateIOException {
 public:
-  ParserException(const char *message) : TerreateIOException(message) {}
-  ParserException(const std::string &message) : TerreateIOException(message) {}
+  ParserException(Str const &message) : TerreateIOException(message) {}
+};
+
+class JsonException : public TerreateIOException {
+public:
+  JsonException(Str const &message) : TerreateIOException(message) {}
 };
 
 class ComposerException : public TerreateIOException {
