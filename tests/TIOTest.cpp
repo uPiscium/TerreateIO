@@ -5,11 +5,9 @@
 using namespace TerreateIO;
 
 int main() {
-  Buffer::ReadBuffer buffer =
-      Parser::ParserBase::LoadFile("tests/resources/testFile.txt");
-  Buffer::WriteBuffer writeBuffer;
-  writeBuffer.Write(buffer.Read(buffer.GetSize()));
-  Composer::ComposerBase::SaveFile("tests/resources/testFile2.txt",
-                                   writeBuffer);
+  Parser::Json::JsonParser parser("tests/resources/test.json");
+  bool s = parser.Parse();
+  Parser::Json::Json json = parser.GetRoot();
+  std::cout << json << std::endl;
   return 0;
 }

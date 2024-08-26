@@ -4,6 +4,7 @@
 #include "buffer.hpp"
 #include "composer.hpp"
 #include "defines.hpp"
+#include "json.hpp"
 #include "parser.hpp"
 
 #endif // __TEERREATEIO_HPP__
