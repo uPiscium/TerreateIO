@@ -9,6 +9,8 @@
 namespace TerreateIO::Buffer {
 using namespace TerreateIO::Defines;
 
+constexpr Byte const EOB = -1;
+
 class ReadBuffer : public TerreateObjectBase {
 private:
   Byte *mBuffer = nullptr;
@@ -49,6 +51,7 @@ public:
     mCursor += sizeof(T);
     return data;
   }
+  Byte Peek() { return this->Fetch()[0]; }
   void Skip(Size const &size = 1u);
   void SkipWhitespace();
 

@@ -8,14 +8,21 @@ namespace TerreateIO::Parser {
 using namespace TerreateIO::Defines;
 
 class ParserBase : public TerreateObjectBase {
+protected:
+  Str mFilePath;
+
 public:
   ParserBase() {}
+  ParserBase(Str const &path) : mFilePath(path) {}
   virtual ~ParserBase() override {}
 
-  virtual void Parse(Buffer::ReadBuffer &buffer) = 0;
+  virtual Bool Parse(Buffer::ReadBuffer &buffer) = 0;
+  virtual Bool Parse() = 0;
 
 public:
   static Buffer::ReadBuffer LoadFile(Str const &path);
+  static Str Escape(Byte const &chr);
+  static Str Unescape(Byte const &chr);
 };
 } // namespace TerreateIO::Parser
 

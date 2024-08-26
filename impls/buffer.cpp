@@ -12,10 +12,11 @@ ReadBuffer::~ReadBuffer() {
 Str ReadBuffer::Fetch(Size const &size) {
   Str result;
   if (mCursor + size > mBuffer + mSize) {
-    throw Exception::BufferException("Buffer out of bounds");
+    Str temp;
+    temp += EOB;
+    return temp;
   } else {
     result = Str(mCursor, mCursor + size);
-    mCursor += size;
   }
   return result;
 }
@@ -23,9 +24,12 @@ Str ReadBuffer::Fetch(Size const &size) {
 Str ReadBuffer::Read(Size const &size) {
   Str result;
   if (mCursor + size > mBuffer + mSize) {
-    throw Exception::BufferException("Buffer out of bounds");
+    Str temp;
+    temp += EOB;
+    return temp;
   } else {
     result = Str(mCursor, mCursor + size);
+    mCursor += size;
   }
   return result;
 }
