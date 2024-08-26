@@ -35,6 +35,13 @@ public:
   JsonException(Str const &message) : TerreateIOException(message) {}
 };
 
+class ComposerException : public TerreateIOException {
+public:
+  ComposerException(const char *message) : TerreateIOException(message) {}
+  ComposerException(const std::string &message)
+      : TerreateIOException(message) {}
+};
+
 } // namespace TerreateIO::Exception
 
 #endif // __TERRATEIO_EXCEPTIONS_HPP__
