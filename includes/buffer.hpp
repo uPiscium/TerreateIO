@@ -72,7 +72,7 @@ public:
     this->Write((Byte const *)&data, sizeof(T));
   }
 
-  Str Dump() { return mStream.str(); }
+  Str Dump() const { return mStream.str(); }
 
   WriteBuffer &operator=(WriteBuffer const &buffer);
 };
