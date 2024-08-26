@@ -1,6 +1,6 @@
 #include "../includes/json.hpp"
 
-namespace TerreateIO::Parser::Json {
+namespace TerreateIO::Json {
 using namespace TerreateIO::Defines;
 
 Str JsonTypeToString(JsonType const &type) {
@@ -358,44 +358,85 @@ Bool JsonParser::Parse() {
   return this->Parse(buffer);
 }
 
-} // namespace TerreateIO::Parser::Json
+void JsonComposer::Indent(Buffer::WriteBuffer &buffer, Size const &indent) {
+  buffer.Write('\n');
+  for (Size i = 0; i < indent; i++) {
+    buffer.Write("  ");
+  }
+}
 
-std::ostream &operator<<(std::ostream &os,
-                         TerreateIO::Parser::Json::Json const &json) {
-  switch (json.GetType()) {
-  case TerreateIO::Parser::Json::JsonType::NULLTYPE:
-    os << "null";
-    break;
-  case TerreateIO::Parser::Json::JsonType::BOOLTYPE:
-    os << (json.GetBool() ? "true" : "false");
-    break;
-  case TerreateIO::Parser::Json::JsonType::NUMBERTYPE:
-    os << json.GetNumber();
-    break;
-  case TerreateIO::Parser::Json::JsonType::STRINGTYPE:
-    os << "\"" << json.GetString() << "\"";
-    break;
-  case TerreateIO::Parser::Json::JsonType::ARRAYTYPE:
-    os << "[";
-    for (TerreateIO::Parser::Json::Size i = 0; i < json.GetSize(); i++) {
-      os << json[i];
-      if (i < json.GetSize() - 1) {
-        os << ", ";
-      }
+void JsonComposer::ComposeString(Buffer::WriteBuffer &buffer,
+                                 Str const &string) {
+  buffer.Write('"');
+  for (auto const &chr : string) {
+    buffer.Write(ParserBase::Escape(chr));
+  }
+  buffer.Write('"');
+}
+
+void JsonComposer::ComposeArray(Buffer::WriteBuffer &buffer, Array const &array,
+                                Size const &indent) {
+  buffer.Write('[');
+  for (Array::const_iterator begin = array.begin(), end = array.end();
+       begin != end; ++begin) {
+    this->Indent(mBuffer, indent + 1);
+    this->Compose(mBuffer, *begin, indent + 1);
+    if (std::next(begin) != end) {
+      buffer.Write(", ");
     }
-    os << "]";
-    break;
-  case TerreateIO::Parser::Json::JsonType::OBJECTTYPE:
-    os << "{";
-    for (TerreateIO::Parser::Json::Size i = 0; i < json.GetSize(); i++) {
-      os << "\"" << json.GetObject().begin()->first
-         << "\": " << json.GetObject().begin()->second;
-      if (i < json.GetSize() - 1) {
-        os << ", ";
-      }
+  }
+  this->Indent(mBuffer, indent);
+  buffer.Write(']');
+}
+
+void JsonComposer::ComposeObject(Buffer::WriteBuffer &buffer,
+                                 Object const &object, Size const &indent) {
+  buffer.Write('{');
+  for (Object::const_iterator begin = object.begin(), end = object.end();
+       begin != end; ++begin) {
+    this->Indent(mBuffer, indent + 1);
+    this->ComposeString(mBuffer, begin->first);
+    buffer.Write(": ");
+    this->Compose(mBuffer, begin->second, indent + 1);
+    if (std::next(begin) != end) {
+      buffer.Write(", ");
     }
-    os << "}";
+  }
+  this->Indent(mBuffer, indent);
+  buffer.Write('}');
+}
+
+void JsonComposer::Compose(Buffer::WriteBuffer &buffer, Json const &json,
+                           Size const &indent) {
+  JsonType type = json.GetType();
+  switch (type) {
+  case JsonType::NULLTYPE:
+    buffer.Write("null");
+    break;
+  case JsonType::BOOLTYPE:
+    buffer.Write(json.GetBool() ? "true" : "false");
+    break;
+  case JsonType::NUMBERTYPE:
+    buffer.Write(std::to_string(json.GetNumber()));
+    break;
+  case JsonType::STRINGTYPE:
+    this->ComposeString(buffer, json.GetString());
+    break;
+  case JsonType::ARRAYTYPE:
+    this->ComposeArray(buffer, json.GetArray(), indent);
+    break;
+  case JsonType::OBJECTTYPE:
+    this->ComposeObject(buffer, json.GetObject(), indent);
+    break;
+  default:
     break;
   }
+}
+} // namespace TerreateIO::Json
+
+std::ostream &operator<<(std::ostream &os, TerreateIO::Json::Json const &json) {
+  TerreateIO::Json::JsonComposer composer;
+  composer.Compose(json);
+  os << composer.GetComposed().Dump();
   return os;
 }

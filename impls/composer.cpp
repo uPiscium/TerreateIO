@@ -1,7 +1,7 @@
 #include "../includes/composer.hpp"
 #include "../includes/exceptions.hpp"
 
-namespace TerreateIO::Composer {
+namespace TerreateIO::Core {
 using namespace TerreateIO::Defines;
 
 void ComposerBase::SaveFile(Str const &path,
@@ -13,4 +13,4 @@ void ComposerBase::SaveFile(Str const &path,
 
   file << buffer.Dump();
 }
-} // namespace TerreateIO::Composer
+} // namespace TerreateIO::Core

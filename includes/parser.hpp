@@ -4,7 +4,7 @@
 #include "buffer.hpp"
 #include "defines.hpp"
 
-namespace TerreateIO::Parser {
+namespace TerreateIO::Core {
 using namespace TerreateIO::Defines;
 
 class ParserBase : public TerreateObjectBase {
@@ -24,6 +24,6 @@ public:
   static Str Escape(Byte const &chr);
   static Str Unescape(Byte const &chr);
 };
-} // namespace TerreateIO::Parser
+} // namespace TerreateIO::Core
 
 #endif // __TERREATEIO_PARSER_HPP__

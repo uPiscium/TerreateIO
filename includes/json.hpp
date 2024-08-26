@@ -2,11 +2,13 @@
 #define __TERREATEIO_JSON_HPP__
 
 #include "buffer.hpp"
+#include "composer.hpp"
 #include "defines.hpp"
 #include "parser.hpp"
 
-namespace TerreateIO::Parser::Json {
+namespace TerreateIO::Json {
 using namespace TerreateIO::Defines;
+using namespace TerreateIO::Core;
 
 class Json;
 
@@ -121,9 +123,27 @@ public:
   Bool Parse(Buffer::ReadBuffer &buffer) override;
   Bool Parse() override;
 };
-} // namespace TerreateIO::Parser::Json
 
-std::ostream &operator<<(std::ostream &os,
-                         TerreateIO::Parser::Json::Json const &json);
+class JsonComposer : public ComposerBase {
+private:
+  void Indent(Buffer::WriteBuffer &buffer, Size const &indent);
+  void ComposeString(Buffer::WriteBuffer &buffer, Str const &string);
+  void ComposeArray(Buffer::WriteBuffer &buffer, Array const &array,
+                    Size const &indent);
+  void ComposeObject(Buffer::WriteBuffer &buffer, Object const &object,
+                     Size const &indent);
+
+public:
+  JsonComposer() = default;
+  JsonComposer(Str const &filepath) : ComposerBase(filepath) {}
+  ~JsonComposer() override = default;
+
+  void Compose(Buffer::WriteBuffer &buffer, Json const &json,
+               Size const &indent);
+  void Compose(Json const &json) { this->Compose(mBuffer, json, 0); }
+};
+} // namespace TerreateIO::Json
+
+std::ostream &operator<<(std::ostream &os, TerreateIO::Json::Json const &json);
 
 #endif // __TERREATEIO_JSON_HPP__

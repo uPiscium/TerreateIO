@@ -1,7 +1,7 @@
 #include "../includes/parser.hpp"
 #include "../includes/exceptions.hpp"
 
-namespace TerreateIO::Parser {
+namespace TerreateIO::Core {
 using namespace TerreateIO::Defines;
 
 Buffer::ReadBuffer ParserBase::LoadFile(Str const &path) {
@@ -69,4 +69,4 @@ Str ParserBase::Unescape(Byte const &chr) {
   return buf;
 }
 
-} // namespace TerreateIO::Parser
+} // namespace TerreateIO::Core
