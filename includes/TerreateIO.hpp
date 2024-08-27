@@ -2,9 +2,9 @@
 #define __TEERREATEIO_HPP__
 
 #include "buffer.hpp"
-#include "composer.hpp"
 #include "defines.hpp"
-#include "json.hpp"
-#include "parser.hpp"
+
+#include "formats/gltf.hpp"
+#include "formats/json.hpp"
 
 #endif // __TEERREATEIO_HPP__

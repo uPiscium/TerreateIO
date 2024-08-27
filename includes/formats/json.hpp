@@ -1,10 +1,7 @@
 #ifndef __TERREATEIO_JSON_HPP__
 #define __TERREATEIO_JSON_HPP__
 
-#include "buffer.hpp"
-#include "composer.hpp"
-#include "defines.hpp"
-#include "parser.hpp"
+#include "base.hpp"
 
 namespace TerreateIO::Json {
 using namespace TerreateIO::Defines;
@@ -106,12 +103,12 @@ private:
   Json mRoot = Json();
 
 private:
-  Bool ParseNull(Buffer::ReadBuffer &buffer, Json &json);
-  Bool ParseBool(Buffer::ReadBuffer &buffer, Json &json);
-  Bool ParseNumber(Buffer::ReadBuffer &buffer, Json &json);
-  Bool ParseString(Buffer::ReadBuffer &buffer, Json &json);
-  Bool ParseArray(Buffer::ReadBuffer &buffer, Json &json);
-  Bool ParseObject(Buffer::ReadBuffer &buffer, Json &json);
+  Bool ParseNull(ReadBuffer &buffer, Json &json);
+  Bool ParseBool(ReadBuffer &buffer, Json &json);
+  Bool ParseNumber(ReadBuffer &buffer, Json &json);
+  Bool ParseString(ReadBuffer &buffer, Json &json);
+  Bool ParseArray(ReadBuffer &buffer, Json &json);
+  Bool ParseObject(ReadBuffer &buffer, Json &json);
 
 public:
   JsonParser() = default;
@@ -120,17 +117,17 @@ public:
 
   Json const &GetRoot() const { return mRoot; }
 
-  Bool Parse(Buffer::ReadBuffer &buffer) override;
+  Bool Parse(ReadBuffer &buffer) override;
   Bool Parse() override;
 };
 
 class JsonComposer : public ComposerBase {
 private:
-  void Indent(Buffer::WriteBuffer &buffer, Size const &indent);
-  void ComposeString(Buffer::WriteBuffer &buffer, Str const &string);
-  void ComposeArray(Buffer::WriteBuffer &buffer, Array const &array,
+  void Indent(WriteBuffer &buffer, Size const &indent);
+  void ComposeString(WriteBuffer &buffer, Str const &string);
+  void ComposeArray(WriteBuffer &buffer, Array const &array,
                     Size const &indent);
-  void ComposeObject(Buffer::WriteBuffer &buffer, Object const &object,
+  void ComposeObject(WriteBuffer &buffer, Object const &object,
                      Size const &indent);
 
 public:
@@ -138,8 +135,7 @@ public:
   JsonComposer(Str const &filepath) : ComposerBase(filepath) {}
   ~JsonComposer() override = default;
 
-  void Compose(Buffer::WriteBuffer &buffer, Json const &json,
-               Size const &indent);
+  void Compose(WriteBuffer &buffer, Json const &json, Size const &indent);
   void Compose(Json const &json) { this->Compose(mBuffer, json, 0); }
 };
 } // namespace TerreateIO::Json

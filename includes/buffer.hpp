@@ -6,7 +6,7 @@
 #include "defines.hpp"
 #include "exceptions.hpp"
 
-namespace TerreateIO::Buffer {
+namespace TerreateIO::Core {
 using namespace TerreateIO::Defines;
 
 constexpr Byte const EOB = -1;
@@ -80,6 +80,6 @@ public:
   WriteBuffer &operator=(WriteBuffer const &buffer);
 };
 
-} // namespace TerreateIO::Buffer
+} // namespace TerreateIO::Core
 
 #endif // __TERREATEIO_BUFFER_HPP__

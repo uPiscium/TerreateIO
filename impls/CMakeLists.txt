@@ -31,8 +31,8 @@ function(SetLibs)
 endfunction()
 
 function(Build)
-  add_library(${PROJECT_NAME} STATIC buffer.cpp composer.cpp json.cpp
-                                     parser.cpp)
+  add_library(${PROJECT_NAME} STATIC buffer.cpp formats/base.cpp
+                                     formats/json.cpp formats/gltf.cpp)
   set_target_properties(
     ${PROJECT_NAME} PROPERTIES ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib
                                LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)

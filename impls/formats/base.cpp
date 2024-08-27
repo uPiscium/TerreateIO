@@ -1,10 +1,10 @@
-#include "../includes/parser.hpp"
-#include "../includes/exceptions.hpp"
+#include "../../includes/formats/base.hpp"
+#include "../../includes/exceptions.hpp"
 
 namespace TerreateIO::Core {
 using namespace TerreateIO::Defines;
 
-Buffer::ReadBuffer ParserBase::LoadFile(Str const &path) {
+ReadBuffer ParserBase::LoadFile(Str const &path) {
   InputFileStream file(path);
   if (!file.is_open()) {
     throw Exception::ParserException("Failed to open file: " + path);
@@ -12,7 +12,7 @@ Buffer::ReadBuffer ParserBase::LoadFile(Str const &path) {
 
   Stream tempBuffer;
   tempBuffer << file.rdbuf();
-  return Buffer::ReadBuffer(tempBuffer.str());
+  return ReadBuffer(tempBuffer.str());
 }
 
 Str ParserBase::Escape(Byte const &chr) {
@@ -69,4 +69,12 @@ Str ParserBase::Unescape(Byte const &chr) {
   return buf;
 }
 
+void ComposerBase::SaveFile(Str const &path, WriteBuffer const &buffer) {
+  OutputFileStream file(path);
+  if (!file.is_open()) {
+    throw Exception::ComposerException("Failed to open file: " + path);
+  }
+
+  file << buffer.Dump();
+}
 } // namespace TerreateIO::Core
