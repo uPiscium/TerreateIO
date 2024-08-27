@@ -1,4 +1,5 @@
-#include "../includes/json.hpp"
+#include "../../includes/formats/json.hpp"
+#include "../../includes/exceptions.hpp"
 
 namespace TerreateIO::Json {
 using namespace TerreateIO::Defines;
@@ -195,7 +196,7 @@ Json &Json::operator=(Json const &json) {
   return *this;
 }
 
-Bool JsonParser::ParseNull(Buffer::ReadBuffer &buffer, Json &json) {
+Bool JsonParser::ParseNull(ReadBuffer &buffer, Json &json) {
   if (buffer.Fetch(4) != "null") {
     return false;
   }
@@ -205,7 +206,7 @@ Bool JsonParser::ParseNull(Buffer::ReadBuffer &buffer, Json &json) {
   return true;
 }
 
-Bool JsonParser::ParseBool(Buffer::ReadBuffer &buffer, Json &json) {
+Bool JsonParser::ParseBool(ReadBuffer &buffer, Json &json) {
   if (buffer.Fetch(4) == "true") {
     buffer.Skip(4);
     json = Json(true);
@@ -221,7 +222,7 @@ Bool JsonParser::ParseBool(Buffer::ReadBuffer &buffer, Json &json) {
   return false;
 }
 
-Bool JsonParser::ParseNumber(Buffer::ReadBuffer &buffer, Json &json) {
+Bool JsonParser::ParseNumber(ReadBuffer &buffer, Json &json) {
   Str number = "";
   Bool isFloat = false;
   Byte c = buffer.Peek();
@@ -245,7 +246,7 @@ Bool JsonParser::ParseNumber(Buffer::ReadBuffer &buffer, Json &json) {
   return true;
 }
 
-Bool JsonParser::ParseString(Buffer::ReadBuffer &buffer, Json &json) {
+Bool JsonParser::ParseString(ReadBuffer &buffer, Json &json) {
   if (buffer.Peek() != '"') {
     return false;
   }
@@ -267,7 +268,7 @@ Bool JsonParser::ParseString(Buffer::ReadBuffer &buffer, Json &json) {
   return true;
 }
 
-Bool JsonParser::ParseArray(Buffer::ReadBuffer &buffer, Json &json) {
+Bool JsonParser::ParseArray(ReadBuffer &buffer, Json &json) {
   if (buffer.Peek() != '[') {
     return false;
   }
@@ -292,7 +293,7 @@ Bool JsonParser::ParseArray(Buffer::ReadBuffer &buffer, Json &json) {
   return true;
 }
 
-Bool JsonParser::ParseObject(Buffer::ReadBuffer &buffer, Json &json) {
+Bool JsonParser::ParseObject(ReadBuffer &buffer, Json &json) {
   if (buffer.Peek() != '{') {
     return false;
   }
@@ -329,7 +330,7 @@ Bool JsonParser::ParseObject(Buffer::ReadBuffer &buffer, Json &json) {
   return true;
 }
 
-Bool JsonParser::Parse(Buffer::ReadBuffer &buffer) {
+Bool JsonParser::Parse(ReadBuffer &buffer) {
   buffer.SkipWhitespace();
   if (buffer.GetSize() == 0) {
     return false;
@@ -354,19 +355,18 @@ Bool JsonParser::Parse(Buffer::ReadBuffer &buffer) {
 }
 
 Bool JsonParser::Parse() {
-  Buffer::ReadBuffer buffer = ParserBase::LoadFile(mFilePath);
+  ReadBuffer buffer = ParserBase::LoadFile(mFilePath);
   return this->Parse(buffer);
 }
 
-void JsonComposer::Indent(Buffer::WriteBuffer &buffer, Size const &indent) {
+void JsonComposer::Indent(WriteBuffer &buffer, Size const &indent) {
   buffer.Write('\n');
   for (Size i = 0; i < indent; i++) {
     buffer.Write("  ");
   }
 }
 
-void JsonComposer::ComposeString(Buffer::WriteBuffer &buffer,
-                                 Str const &string) {
+void JsonComposer::ComposeString(WriteBuffer &buffer, Str const &string) {
   buffer.Write('"');
   for (auto const &chr : string) {
     buffer.Write(ParserBase::Escape(chr));
@@ -374,7 +374,7 @@ void JsonComposer::ComposeString(Buffer::WriteBuffer &buffer,
   buffer.Write('"');
 }
 
-void JsonComposer::ComposeArray(Buffer::WriteBuffer &buffer, Array const &array,
+void JsonComposer::ComposeArray(WriteBuffer &buffer, Array const &array,
                                 Size const &indent) {
   buffer.Write('[');
   for (Array::const_iterator begin = array.begin(), end = array.end();
@@ -389,8 +389,8 @@ void JsonComposer::ComposeArray(Buffer::WriteBuffer &buffer, Array const &array,
   buffer.Write(']');
 }
 
-void JsonComposer::ComposeObject(Buffer::WriteBuffer &buffer,
-                                 Object const &object, Size const &indent) {
+void JsonComposer::ComposeObject(WriteBuffer &buffer, Object const &object,
+                                 Size const &indent) {
   buffer.Write('{');
   for (Object::const_iterator begin = object.begin(), end = object.end();
        begin != end; ++begin) {
@@ -406,7 +406,7 @@ void JsonComposer::ComposeObject(Buffer::WriteBuffer &buffer,
   buffer.Write('}');
 }
 
-void JsonComposer::Compose(Buffer::WriteBuffer &buffer, Json const &json,
+void JsonComposer::Compose(WriteBuffer &buffer, Json const &json,
                            Size const &indent) {
   JsonType type = json.GetType();
   switch (type) {

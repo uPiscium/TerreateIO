@@ -1,6 +1,6 @@
 #include "../includes/buffer.hpp"
 
-namespace TerreateIO::Buffer {
+namespace TerreateIO::Core {
 using namespace TerreateIO::Defines;
 
 ReadBuffer::~ReadBuffer() {
@@ -69,4 +69,4 @@ WriteBuffer &WriteBuffer::operator=(WriteBuffer const &buffer) {
   }
   return *this;
 }
-} // namespace TerreateIO::Buffer
+} // namespace TerreateIO::Core
