@@ -30,9 +30,9 @@ public:
   ParserException(Str const &message) : TerreateIOException(message) {}
 };
 
-class JsonException : public TerreateIOException {
+class JSONException : public TerreateIOException {
 public:
-  JsonException(Str const &message) : TerreateIOException(message) {}
+  JSONException(Str const &message) : TerreateIOException(message) {}
 };
 
 class ComposerException : public TerreateIOException {

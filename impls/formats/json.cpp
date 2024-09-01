@@ -1,38 +1,38 @@
 #include "../../includes/formats/json.hpp"
 #include "../../includes/exceptions.hpp"
 
-namespace TerreateIO::Json {
+namespace TerreateIO::JSON {
 using namespace TerreateIO::Defines;
 
-Str JsonTypeToString(JsonType const &type) {
+Str JSONTypeToString(JSONType const &type) {
   switch (type) {
-  case JsonType::NULLTYPE:
+  case JSONType::NULLTYPE:
     return "null";
-  case JsonType::BOOLTYPE:
+  case JSONType::BOOLTYPE:
     return "boolean";
-  case JsonType::NUMBERTYPE:
+  case JSONType::NUMBERTYPE:
     return "number";
-  case JsonType::STRINGTYPE:
+  case JSONType::STRINGTYPE:
     return "string";
-  case JsonType::ARRAYTYPE:
+  case JSONType::ARRAYTYPE:
     return "array";
-  case JsonType::OBJECTTYPE:
+  case JSONType::OBJECTTYPE:
     return "object";
   }
   return "";
 }
 
-void Json::Copy(Json const &json) {
+void JSON::Copy(JSON const &json) {
   this->Clear();
   mType = json.mType;
   switch (mType) {
-  case JsonType::STRINGTYPE:
+  case JSONType::STRINGTYPE:
     mValue.string = new Str(*json.mValue.string);
     break;
-  case JsonType::ARRAYTYPE:
+  case JSONType::ARRAYTYPE:
     mValue.array = new Array(*json.mValue.array);
     break;
-  case JsonType::OBJECTTYPE:
+  case JSONType::OBJECTTYPE:
     mValue.object = new Object(*json.mValue.object);
     break;
   default:
@@ -41,15 +41,15 @@ void Json::Copy(Json const &json) {
   }
 }
 
-void Json::Clear() {
+void JSON::Clear() {
   switch (mType) {
-  case JsonType::STRINGTYPE:
+  case JSONType::STRINGTYPE:
     delete mValue.string;
     break;
-  case JsonType::ARRAYTYPE:
+  case JSONType::ARRAYTYPE:
     delete mValue.array;
     break;
-  case JsonType::OBJECTTYPE:
+  case JSONType::OBJECTTYPE:
     delete mValue.object;
     break;
   default:
@@ -57,15 +57,15 @@ void Json::Clear() {
   }
 }
 
-Json::Json(Json const &json) {
+JSON::JSON(JSON const &json) {
   switch (json.mType) {
-  case JsonType::STRINGTYPE:
+  case JSONType::STRINGTYPE:
     mValue.string = new Str(*json.mValue.string);
     break;
-  case JsonType::ARRAYTYPE:
+  case JSONType::ARRAYTYPE:
     mValue.array = new Array(*json.mValue.array);
     break;
-  case JsonType::OBJECTTYPE:
+  case JSONType::OBJECTTYPE:
     mValue.object = new Object(*json.mValue.object);
     break;
   default:
@@ -75,154 +75,154 @@ Json::Json(Json const &json) {
   mType = json.mType;
 }
 
-Size Json::GetSize() const {
+Size JSON::GetSize() const {
   switch (mType) {
-  case JsonType::ARRAYTYPE:
+  case JSONType::ARRAYTYPE:
     return mValue.array->size();
-  case JsonType::OBJECTTYPE:
+  case JSONType::OBJECTTYPE:
     return mValue.object->size();
   default:
-    throw Exception::JsonException("Json is not an array or object");
+    throw Exception::JSONException("JSON is not an array or object");
   }
 }
 
-Bool const &Json::GetBool() const {
-  if (mType != JsonType::BOOLTYPE) {
-    throw Exception::JsonException("Json is not a boolean");
+Bool const &JSON::GetBool() const {
+  if (mType != JSONType::BOOLTYPE) {
+    throw Exception::JSONException("JSON is not a boolean");
   }
   return mValue.boolean;
 }
 
-Double const &Json::GetNumber() const {
-  if (mType != JsonType::NUMBERTYPE) {
-    throw Exception::JsonException("Json is not a number");
+Double const &JSON::GetNumber() const {
+  if (mType != JSONType::NUMBERTYPE) {
+    throw Exception::JSONException("JSON is not a number");
   }
   return mValue.number;
 }
 
-Str const &Json::GetString() const {
-  if (mType != JsonType::STRINGTYPE) {
-    throw Exception::JsonException("Json is not a string");
+Str const &JSON::GetString() const {
+  if (mType != JSONType::STRINGTYPE) {
+    throw Exception::JSONException("JSON is not a string");
   }
   return *mValue.string;
 }
 
-Array const &Json::GetArray() const {
-  if (mType != JsonType::ARRAYTYPE) {
-    throw Exception::JsonException("Json is not an array");
+Array const &JSON::GetArray() const {
+  if (mType != JSONType::ARRAYTYPE) {
+    throw Exception::JSONException("JSON is not an array");
   }
   return *mValue.array;
 }
 
-Object const &Json::GetObject() const {
-  if (mType != JsonType::OBJECTTYPE) {
-    throw Exception::JsonException("Json is not an object");
+Object const &JSON::GetObject() const {
+  if (mType != JSONType::OBJECTTYPE) {
+    throw Exception::JSONException("JSON is not an object");
   }
   return *mValue.object;
 }
 
-Bool Json::Has(Str const &key) const {
-  if (mType != JsonType::OBJECTTYPE) {
-    throw Exception::JsonException("Json is not an object");
+Bool JSON::Has(Str const &key) const {
+  if (mType != JSONType::OBJECTTYPE) {
+    throw Exception::JSONException("JSON is not an object");
   }
   return mValue.object->find(key) != mValue.object->end();
 }
 
-Json &Json::operator[](Size const &index) {
-  if (mType != JsonType::ARRAYTYPE) {
-    throw Exception::JsonException("Json is not an array");
+JSON &JSON::operator[](Size const &index) {
+  if (mType != JSONType::ARRAYTYPE) {
+    throw Exception::JSONException("JSON is not an array");
   }
   return (*mValue.array)[index];
 }
 
-Json &Json::operator[](Str const &key) {
-  if (mType != JsonType::OBJECTTYPE) {
-    throw Exception::JsonException("Json is not an object");
+JSON &JSON::operator[](Str const &key) {
+  if (mType != JSONType::OBJECTTYPE) {
+    throw Exception::JSONException("JSON is not an object");
   }
   return (*mValue.object)[key];
 }
 
-Json const &Json::operator[](Size const &index) const {
-  if (mType != JsonType::ARRAYTYPE) {
-    throw Exception::JsonException("Json is not an array");
+JSON const &JSON::operator[](Size const &index) const {
+  if (mType != JSONType::ARRAYTYPE) {
+    throw Exception::JSONException("JSON is not an array");
   }
   return (*mValue.array)[index];
 }
 
-Json const &Json::operator[](Str const &key) const {
-  if (mType != JsonType::OBJECTTYPE) {
-    throw Exception::JsonException("Json is not an object");
+JSON const &JSON::operator[](Str const &key) const {
+  if (mType != JSONType::OBJECTTYPE) {
+    throw Exception::JSONException("JSON is not an object");
   }
   return (*mValue.object)[key];
 }
 
-Json &Json::operator=(Bool const &boolean) {
+JSON &JSON::operator=(Bool const &boolean) {
   this->Clear();
   mValue.boolean = boolean;
-  mType = JsonType::BOOLTYPE;
+  mType = JSONType::BOOLTYPE;
   return *this;
 }
 
-Json &Json::operator=(Double const &number) {
+JSON &JSON::operator=(Double const &number) {
   this->Clear();
   mValue.number = number;
-  mType = JsonType::NUMBERTYPE;
+  mType = JSONType::NUMBERTYPE;
   return *this;
 }
 
-Json &Json::operator=(Str const &string) {
+JSON &JSON::operator=(Str const &string) {
   this->Clear();
   mValue.string = new Str(string);
-  mType = JsonType::STRINGTYPE;
+  mType = JSONType::STRINGTYPE;
   return *this;
 }
 
-Json &Json::operator=(Array const &array) {
+JSON &JSON::operator=(Array const &array) {
   this->Clear();
   mValue.array = new Array(array);
-  mType = JsonType::ARRAYTYPE;
+  mType = JSONType::ARRAYTYPE;
   return *this;
 }
 
-Json &Json::operator=(Object const &object) {
+JSON &JSON::operator=(Object const &object) {
   this->Clear();
   mValue.object = new Object(object);
-  mType = JsonType::OBJECTTYPE;
+  mType = JSONType::OBJECTTYPE;
   return *this;
 }
 
-Json &Json::operator=(Json const &json) {
+JSON &JSON::operator=(JSON const &json) {
   this->Copy(json);
   return *this;
 }
 
-Bool JsonParser::ParseNull(ReadBuffer &buffer, Json &json) {
+Bool JSONParser::ParseNull(ReadBuffer &buffer, JSON &json) {
   if (buffer.Fetch(4) != "null") {
     return false;
   }
 
   buffer.Skip(4);
-  json = Json();
+  json = JSON();
   return true;
 }
 
-Bool JsonParser::ParseBool(ReadBuffer &buffer, Json &json) {
+Bool JSONParser::ParseBool(ReadBuffer &buffer, JSON &json) {
   if (buffer.Fetch(4) == "true") {
     buffer.Skip(4);
-    json = Json(true);
+    json = JSON(true);
     return true;
   }
 
   if (buffer.Fetch(5) == "false") {
     buffer.Skip(5);
-    json = Json(false);
+    json = JSON(false);
     return true;
   }
 
   return false;
 }
 
-Bool JsonParser::ParseNumber(ReadBuffer &buffer, Json &json) {
+Bool JSONParser::ParseNumber(ReadBuffer &buffer, JSON &json) {
   Str number = "";
   Bool isFloat = false;
   Byte c = buffer.Peek();
@@ -238,15 +238,15 @@ Bool JsonParser::ParseNumber(ReadBuffer &buffer, Json &json) {
   }
 
   if (isFloat) {
-    json = Json(std::stod(number));
+    json = JSON(std::stod(number));
   } else {
-    json = Json((Double)std::stoll(number));
+    json = JSON((Double)std::stoll(number));
   }
 
   return true;
 }
 
-Bool JsonParser::ParseString(ReadBuffer &buffer, Json &json) {
+Bool JSONParser::ParseString(ReadBuffer &buffer, JSON &json) {
   if (buffer.Peek() != '"') {
     return false;
   }
@@ -264,11 +264,11 @@ Bool JsonParser::ParseString(ReadBuffer &buffer, Json &json) {
     c = buffer.Peek();
   }
   buffer.Skip(); // Skip the closing quote
-  json = Json(string);
+  json = JSON(string);
   return true;
 }
 
-Bool JsonParser::ParseArray(ReadBuffer &buffer, Json &json) {
+Bool JSONParser::ParseArray(ReadBuffer &buffer, JSON &json) {
   if (buffer.Peek() != '[') {
     return false;
   }
@@ -277,7 +277,7 @@ Bool JsonParser::ParseArray(ReadBuffer &buffer, Json &json) {
   Array array;
   while (buffer.Peek() != ']') {
     buffer.SkipWhitespace();
-    JsonParser parser;
+    JSONParser parser;
     if (!parser.Parse(buffer)) {
       return false;
     }
@@ -289,11 +289,11 @@ Bool JsonParser::ParseArray(ReadBuffer &buffer, Json &json) {
     }
   }
   buffer.Skip(); // Skip the closing bracket
-  json = Json(array);
+  json = JSON(array);
   return true;
 }
 
-Bool JsonParser::ParseObject(ReadBuffer &buffer, Json &json) {
+Bool JSONParser::ParseObject(ReadBuffer &buffer, JSON &json) {
   if (buffer.Peek() != '{') {
     return false;
   }
@@ -302,7 +302,7 @@ Bool JsonParser::ParseObject(ReadBuffer &buffer, Json &json) {
   Object object;
   while (buffer.Peek() != '}') {
     buffer.SkipWhitespace();
-    Json key;
+    JSON key;
     if (!this->ParseString(buffer, key)) {
       return false;
     }
@@ -313,7 +313,7 @@ Bool JsonParser::ParseObject(ReadBuffer &buffer, Json &json) {
     }
 
     buffer.SkipWhitespace();
-    JsonParser parser;
+    JSONParser parser;
     if (!parser.Parse(buffer)) {
       return false;
     }
@@ -326,11 +326,11 @@ Bool JsonParser::ParseObject(ReadBuffer &buffer, Json &json) {
     buffer.SkipWhitespace();
   }
   buffer.Skip(); // Skip the closing brace
-  json = Json(object);
+  json = JSON(object);
   return true;
 }
 
-Bool JsonParser::Parse(ReadBuffer &buffer) {
+Bool JSONParser::Parse(ReadBuffer &buffer) {
   buffer.SkipWhitespace();
   if (buffer.GetSize() == 0) {
     return false;
@@ -354,19 +354,19 @@ Bool JsonParser::Parse(ReadBuffer &buffer) {
   return false;
 }
 
-Bool JsonParser::Parse() {
+Bool JSONParser::Parse() {
   ReadBuffer buffer = ParserBase::LoadFile(mFilePath);
   return this->Parse(buffer);
 }
 
-void JsonComposer::Indent(WriteBuffer &buffer, Size const &indent) {
+void JSONComposer::Indent(WriteBuffer &buffer, Size const &indent) {
   buffer.Write('\n');
   for (Size i = 0; i < indent; i++) {
     buffer.Write("  ");
   }
 }
 
-void JsonComposer::ComposeString(WriteBuffer &buffer, Str const &string) {
+void JSONComposer::ComposeString(WriteBuffer &buffer, Str const &string) {
   buffer.Write('"');
   for (auto const &chr : string) {
     buffer.Write(ParserBase::Escape(chr));
@@ -374,7 +374,7 @@ void JsonComposer::ComposeString(WriteBuffer &buffer, Str const &string) {
   buffer.Write('"');
 }
 
-void JsonComposer::ComposeArray(WriteBuffer &buffer, Array const &array,
+void JSONComposer::ComposeArray(WriteBuffer &buffer, Array const &array,
                                 Size const &indent) {
   buffer.Write('[');
   for (Array::const_iterator begin = array.begin(), end = array.end();
@@ -389,7 +389,7 @@ void JsonComposer::ComposeArray(WriteBuffer &buffer, Array const &array,
   buffer.Write(']');
 }
 
-void JsonComposer::ComposeObject(WriteBuffer &buffer, Object const &object,
+void JSONComposer::ComposeObject(WriteBuffer &buffer, Object const &object,
                                  Size const &indent) {
   buffer.Write('{');
   for (Object::const_iterator begin = object.begin(), end = object.end();
@@ -406,36 +406,36 @@ void JsonComposer::ComposeObject(WriteBuffer &buffer, Object const &object,
   buffer.Write('}');
 }
 
-void JsonComposer::Compose(WriteBuffer &buffer, Json const &json,
+void JSONComposer::Compose(WriteBuffer &buffer, JSON const &json,
                            Size const &indent) {
-  JsonType type = json.GetType();
+  JSONType type = json.GetType();
   switch (type) {
-  case JsonType::NULLTYPE:
+  case JSONType::NULLTYPE:
     buffer.Write("null");
     break;
-  case JsonType::BOOLTYPE:
+  case JSONType::BOOLTYPE:
     buffer.Write(json.GetBool() ? "true" : "false");
     break;
-  case JsonType::NUMBERTYPE:
+  case JSONType::NUMBERTYPE:
     buffer.Write(std::to_string(json.GetNumber()));
     break;
-  case JsonType::STRINGTYPE:
+  case JSONType::STRINGTYPE:
     this->ComposeString(buffer, json.GetString());
     break;
-  case JsonType::ARRAYTYPE:
+  case JSONType::ARRAYTYPE:
     this->ComposeArray(buffer, json.GetArray(), indent);
     break;
-  case JsonType::OBJECTTYPE:
+  case JSONType::OBJECTTYPE:
     this->ComposeObject(buffer, json.GetObject(), indent);
     break;
   default:
     break;
   }
 }
-} // namespace TerreateIO::Json
+} // namespace TerreateIO::JSON
 
-std::ostream &operator<<(std::ostream &os, TerreateIO::Json::Json const &json) {
-  TerreateIO::Json::JsonComposer composer;
+std::ostream &operator<<(std::ostream &os, TerreateIO::JSON::JSON const &json) {
+  TerreateIO::JSON::JSONComposer composer;
   composer.Compose(json);
   os << composer.GetComposed().Dump();
   return os;
