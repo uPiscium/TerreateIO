@@ -17,9 +17,18 @@ using namespace TerreateCore::Defines;
 typedef TerreateCore::Core::UUID UUID;
 typedef TerreateCore::Core::TerreateObjectBase TerreateObjectBase;
 
+using glm::slerp;
+
 inline void FlipImageLoad(Bool const &flip) {
   stbi_set_flip_vertically_on_load(flip);
 }
+
+// Used to specify the interpolation type of a keyframe
+enum class InterpolationType {
+  LINEAR,
+  STEP,
+  // CUBIC_SPLINE // TODO: Implement cubic spline interpolation
+};
 } // namespace TerreateIO::Defines
 
 #endif // __TERREATEIO_DEFINES_HPP__

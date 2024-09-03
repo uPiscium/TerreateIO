@@ -20,6 +20,11 @@ public:
   }
 };
 
+class ModelException : public TerreateIOException {
+public:
+  ModelException(Str const &message) : TerreateIOException(message) {}
+};
+
 class BufferException : public TerreateIOException {
 public:
   BufferException(Str const &message) : TerreateIOException(message) {}

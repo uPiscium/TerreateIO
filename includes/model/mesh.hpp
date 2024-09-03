@@ -3,6 +3,7 @@
 
 #include "../defines.hpp"
 #include "material.hpp"
+#include "skeleton.hpp"
 
 namespace TerreateIO::Model {
 using namespace TerreateIO::Defines;
@@ -24,6 +25,7 @@ private:
   Bool mRawData = false;
 
   Material mMaterial;
+  Skeleton mSkeleton;
 
 public:
   Mesh() {}
@@ -40,6 +42,7 @@ public:
     return mRawVertexDataAttributes;
   }
   Material const &GetMaterial() const { return mMaterial; }
+  Skeleton const &GetSkeleton() const { return mSkeleton; }
 
   void SetVertexConstructionIndices(Vec<Vec<Uint>> const &indices) {
     mVertexConstructionIndices = indices;
@@ -48,6 +51,7 @@ public:
   void SetRawVertexData(Vec<Float> const &data,
                         Vec<Attribute> const &attributes);
   void SetMaterial(Material const &material) { mMaterial = material; }
+  void SetSkeleton(Skeleton const &skeleton) { mSkeleton = skeleton; }
 
   Bool const &IsRawData() const { return mRawData; }
 
