@@ -1,8 +1,8 @@
 #ifndef __TERREATEIO_BASE_HPP__
 #define __TERREATEIO_BASE_HPP__
 
-#include "../buffer.hpp"
 #include "../defines.hpp"
+#include "buffer.hpp"
 
 namespace TerreateIO::Core {
 using namespace TerreateIO::Defines;

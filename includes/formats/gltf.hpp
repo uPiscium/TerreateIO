@@ -4,11 +4,11 @@
 #include "base.hpp"
 #include "json.hpp"
 
-namespace TerreateIO::glTF {
+namespace TerreateIO::GLTF {
 using namespace TerreateIO::Defines;
 using namespace TerreateIO::Core;
 
-typedef Json::JsonParser JsonParser;
+typedef JSON::JSONParser JSONParser;
 
 class GLTFParser : public ParserBase {
   ;
@@ -17,6 +17,6 @@ class GLTFParser : public ParserBase {
 class GLTFComposer : public ComposerBase {
   ;
 };
-} // namespace TerreateIO::glTF
+} // namespace TerreateIO::GLTF
 
 #endif // __TERREATEIO_GLTF_HPP__

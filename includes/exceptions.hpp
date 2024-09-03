@@ -20,6 +20,11 @@ public:
   }
 };
 
+class ModelException : public TerreateIOException {
+public:
+  ModelException(Str const &message) : TerreateIOException(message) {}
+};
+
 class BufferException : public TerreateIOException {
 public:
   BufferException(Str const &message) : TerreateIOException(message) {}
@@ -30,9 +35,9 @@ public:
   ParserException(Str const &message) : TerreateIOException(message) {}
 };
 
-class JsonException : public TerreateIOException {
+class JSONException : public TerreateIOException {
 public:
-  JsonException(Str const &message) : TerreateIOException(message) {}
+  JSONException(Str const &message) : TerreateIOException(message) {}
 };
 
 class ComposerException : public TerreateIOException {
