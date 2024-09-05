@@ -31,8 +31,16 @@ function(SetLibs)
 endfunction()
 
 function(Build)
-  add_library(${PROJECT_NAME} STATIC buffer.cpp formats/base.cpp
-                                     formats/json.cpp formats/gltf.cpp)
+  add_library(
+    ${PROJECT_NAME} STATIC
+    model/animation.cpp
+    model/material.cpp
+    model/mesh.cpp
+    model/skeleton.cpp
+    formats/buffer.cpp
+    formats/base.cpp
+    formats/json.cpp
+    formats/gltf.cpp)
   set_target_properties(
     ${PROJECT_NAME} PROPERTIES ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib
                                LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)

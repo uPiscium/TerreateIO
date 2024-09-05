@@ -3,16 +3,16 @@
 
 #include "base.hpp"
 
-namespace TerreateIO::Json {
+namespace TerreateIO::JSON {
 using namespace TerreateIO::Defines;
 using namespace TerreateIO::Core;
 
-class Json;
+class JSON;
 
-typedef Vec<Json> Array;
-typedef Map<Str, Json> Object;
+typedef Vec<JSON> Array;
+typedef Map<Str, JSON> Object;
 
-enum class JsonType {
+enum class JSONType {
   NULLTYPE,
   BOOLTYPE,
   NUMBERTYPE,
@@ -21,9 +21,9 @@ enum class JsonType {
   OBJECTTYPE
 };
 
-Str JsonTypeToString(JsonType const &type);
+Str JSONTypeToString(JSONType const &type);
 
-union JsonValue {
+union JSONValue {
   Bool boolean;
   Double number;
   Str *string;
@@ -31,37 +31,37 @@ union JsonValue {
   Object *object;
 };
 
-class Json {
+class JSON {
 private:
-  JsonValue mValue;
-  JsonType mType;
+  JSONValue mValue;
+  JSONType mType;
 
 private:
-  void Copy(Json const &json);
+  void Copy(JSON const &json);
   void Clear();
 
 public:
-  Json() : mType(JsonType::NULLTYPE) { mValue.number = 0; }
-  explicit Json(Bool boolean) : mType(JsonType::BOOLTYPE) {
+  JSON() : mType(JSONType::NULLTYPE) { mValue.number = 0; }
+  explicit JSON(Bool boolean) : mType(JSONType::BOOLTYPE) {
     mValue.boolean = boolean;
   }
-  explicit Json(Double number) : mType(JsonType::NUMBERTYPE) {
+  explicit JSON(Double number) : mType(JSONType::NUMBERTYPE) {
     mValue.number = number;
   }
-  explicit Json(Str const &string) : mType(JsonType::STRINGTYPE) {
+  explicit JSON(Str const &string) : mType(JSONType::STRINGTYPE) {
     mValue.string = new Str(string);
   }
-  explicit Json(Array const &array) : mType(JsonType::ARRAYTYPE) {
+  explicit JSON(Array const &array) : mType(JSONType::ARRAYTYPE) {
     mValue.array = new Array(array);
   }
-  explicit Json(Object const &object) : mType(JsonType::OBJECTTYPE) {
+  explicit JSON(Object const &object) : mType(JSONType::OBJECTTYPE) {
     mValue.object = new Object(object);
   }
-  Json(Json const &json);
-  ~Json() { this->Clear(); }
+  JSON(JSON const &json);
+  ~JSON() { this->Clear(); }
 
-  JsonType const &GetType() const { return mType; }
-  JsonValue const &GetValue() const { return mValue; }
+  JSONType const &GetType() const { return mType; }
+  JSONValue const &GetValue() const { return mValue; }
 
   Size GetSize() const;
   Bool const &GetBool() const;
@@ -70,26 +70,26 @@ public:
   Array const &GetArray() const;
   Object const &GetObject() const;
 
-  Bool IsNull() const { return mType == JsonType::NULLTYPE; }
-  Bool IsBool() const { return mType == JsonType::BOOLTYPE; }
-  Bool IsNumber() const { return mType == JsonType::NUMBERTYPE; }
-  Bool IsString() const { return mType == JsonType::STRINGTYPE; }
-  Bool IsArray() const { return mType == JsonType::ARRAYTYPE; }
-  Bool IsObject() const { return mType == JsonType::OBJECTTYPE; }
+  Bool IsNull() const { return mType == JSONType::NULLTYPE; }
+  Bool IsBool() const { return mType == JSONType::BOOLTYPE; }
+  Bool IsNumber() const { return mType == JSONType::NUMBERTYPE; }
+  Bool IsString() const { return mType == JSONType::STRINGTYPE; }
+  Bool IsArray() const { return mType == JSONType::ARRAYTYPE; }
+  Bool IsObject() const { return mType == JSONType::OBJECTTYPE; }
 
   Bool Has(Str const &key) const;
 
-  Json &operator[](Size const &index);
-  Json &operator[](Str const &key);
-  Json const &operator[](Size const &index) const;
-  Json const &operator[](Str const &key) const;
+  JSON &operator[](Size const &index);
+  JSON &operator[](Str const &key);
+  JSON const &operator[](Size const &index) const;
+  JSON const &operator[](Str const &key) const;
 
-  Json &operator=(Bool const &boolean);
-  Json &operator=(Double const &number);
-  Json &operator=(Str const &string);
-  Json &operator=(Array const &array);
-  Json &operator=(Object const &object);
-  Json &operator=(Json const &json);
+  JSON &operator=(Bool const &boolean);
+  JSON &operator=(Double const &number);
+  JSON &operator=(Str const &string);
+  JSON &operator=(Array const &array);
+  JSON &operator=(Object const &object);
+  JSON &operator=(JSON const &JSON);
 
   explicit operator Bool() const { return this->GetBool(); }
   explicit operator Double() const { return this->GetNumber(); }
@@ -98,30 +98,30 @@ public:
   explicit operator Object() const { return this->GetObject(); }
 };
 
-class JsonParser : public ParserBase {
+class JSONParser : public ParserBase {
 private:
-  Json mRoot = Json();
+  JSON mRoot = JSON();
 
 private:
-  Bool ParseNull(ReadBuffer &buffer, Json &json);
-  Bool ParseBool(ReadBuffer &buffer, Json &json);
-  Bool ParseNumber(ReadBuffer &buffer, Json &json);
-  Bool ParseString(ReadBuffer &buffer, Json &json);
-  Bool ParseArray(ReadBuffer &buffer, Json &json);
-  Bool ParseObject(ReadBuffer &buffer, Json &json);
+  Bool ParseNull(ReadBuffer &buffer, JSON &json);
+  Bool ParseBool(ReadBuffer &buffer, JSON &json);
+  Bool ParseNumber(ReadBuffer &buffer, JSON &json);
+  Bool ParseString(ReadBuffer &buffer, JSON &json);
+  Bool ParseArray(ReadBuffer &buffer, JSON &json);
+  Bool ParseObject(ReadBuffer &buffer, JSON &json);
 
 public:
-  JsonParser() = default;
-  JsonParser(Str const &filepath) : ParserBase(filepath) {}
-  ~JsonParser() override = default;
+  JSONParser() = default;
+  JSONParser(Str const &filepath) : ParserBase(filepath) {}
+  ~JSONParser() override = default;
 
-  Json const &GetRoot() const { return mRoot; }
+  JSON const &GetRoot() const { return mRoot; }
 
   Bool Parse(ReadBuffer &buffer) override;
   Bool Parse() override;
 };
 
-class JsonComposer : public ComposerBase {
+class JSONComposer : public ComposerBase {
 private:
   void Indent(WriteBuffer &buffer, Size const &indent);
   void ComposeString(WriteBuffer &buffer, Str const &string);
@@ -131,15 +131,15 @@ private:
                      Size const &indent);
 
 public:
-  JsonComposer() = default;
-  JsonComposer(Str const &filepath) : ComposerBase(filepath) {}
-  ~JsonComposer() override = default;
+  JSONComposer() = default;
+  JSONComposer(Str const &filepath) : ComposerBase(filepath) {}
+  ~JSONComposer() override = default;
 
-  void Compose(WriteBuffer &buffer, Json const &json, Size const &indent);
-  void Compose(Json const &json) { this->Compose(mBuffer, json, 0); }
+  void Compose(WriteBuffer &buffer, JSON const &json, Size const &indent);
+  void Compose(JSON const &json) { this->Compose(mBuffer, json, 0); }
 };
-} // namespace TerreateIO::Json
+} // namespace TerreateIO::JSON
 
-std::ostream &operator<<(std::ostream &os, TerreateIO::Json::Json const &json);
+std::ostream &operator<<(std::ostream &os, TerreateIO::JSON::JSON const &json);
 
 #endif // __TERREATEIO_JSON_HPP__
