@@ -77,8 +77,8 @@ enum class GLTFTextureWrapping {
 };
 
 struct GLTFAccessor {
-  Uint bufferView = 0u;
-  Uint byteOffset = 0u;
+  Nullable<Uint> bufferView;
+  Nullable<Uint> byteOffset;
   GLTFComponentType componentType = GLTFComponentType::NONE; // Required
   Bool normalized = false;
   Uint count = 0u;                // Required
@@ -90,7 +90,7 @@ struct GLTFAccessor {
 };
 
 struct GLTFAnimationTarget {
-  Uint node = 0u;
+  Nullable<Uint> node;
   Str path = ""; // Required
 };
 
@@ -126,9 +126,9 @@ struct GLTFBuffer {
 
 struct GLTFBufferView {
   Uint buffer = 0u; // Required
-  Uint byteOffset = 0u;
+  Nullable<Uint> byteOffset;
   Uint byteLength = 0u; // Required
-  Uint byteStride = 0u;
+  Nullable<Uint> byteStride;
   GLTFBufferTarget target = GLTFBufferTarget::NONE;
   Str name = "";
 };
@@ -141,9 +141,9 @@ struct GLTFOrthographic {
 };
 
 struct GLTFPerspective {
-  Float aspectRatio = 0.0f;
+  Nullable<Float> aspectRatio;
   Float yfov = 0.0f; // Required
-  Float zfar = 0.0f;
+  Nullable<Float> zfar;
   Float znear = 0.0f; // Required
 };
 
@@ -157,13 +157,13 @@ struct GLTFCamera {
 struct GLTFImage {
   Str uri = "";
   Str mimeType = "";
-  Uint bufferView = 0u;
+  Nullable<Uint> bufferView;
   Str name = "";
 };
 
 struct GLTFTextureInfo {
   Uint index = 0u; // Required
-  Uint texCoord = 0u;
+  Nullable<Uint> texCoord;
 };
 
 struct GLTFPBRMetallicRoughness {
@@ -176,13 +176,13 @@ struct GLTFPBRMetallicRoughness {
 
 struct GLTFNormalTextureInfo {
   Uint index = 0u; // Required
-  Uint texCoord = 0u;
+  Nullable<Uint> texCoord;
   Float scale = 1.0f;
 };
 
 struct GLTFOcclusionTextureInfo {
   Uint index = 0u; // Required
-  Uint texCoord = 0u;
+  Nullable<Uint> texCoord;
   Float strength = 1.0f;
 };
 
@@ -200,8 +200,8 @@ struct GLTFMaterial {
 
 struct GLTFPrimitive {
   Map<Str, Uint> attributes; // Required
-  Uint indices = 0u;
-  Uint material = 0u;
+  Nullable<Uint> indices;
+  Nullable<Uint> material;
   GLTFPrimitiveMode mode = GLTFPrimitiveMode::TRIANGLES;
   Map<Str, Uint> morphTargets;
 };
@@ -213,11 +213,11 @@ struct GLTFMesh {
 };
 
 struct GLTFNode {
-  Uint camera = 0u;
+  Nullable<Uint> camera;
   Vec<Uint> children;
-  Uint skin = 0u;
+  Nullable<Uint> skin;
   mat4 matrix = identity<mat4>();
-  Uint mesh = 0u;
+  Nullable<Uint> mesh;
   quat rotation = quat(1.0f, 0.0f, 0.0f, 0.0f);
   vec3 scale = vec3(1.0f);
   vec3 translation = vec3(0.0f);
@@ -239,14 +239,14 @@ struct GLTFScene {
 };
 
 struct GLTFSkin {
-  Uint inverseBindMatrices = 0u;
-  Uint skeleton = 0u;
+  Nullable<Uint> inverseBindMatrices;
+  Nullable<Uint> skeleton;
   Vec<Uint> joints; // Required
   Str name = "";
 };
 
 struct GLTFTexture {
-  Uint sampler = 0u;
+  Nullable<Uint> sampler;
   Uint source = 0u; // Required
   Str name = "";
 };
@@ -265,7 +265,7 @@ struct GLTFRoot {
   Vec<GLTFMesh> meshes;
   Vec<GLTFNode> nodes;
   Vec<GLTFSampler> samplers;
-  Uint scene = 0u;
+  Nullable<Uint> scene;
   Vec<GLTFScene> scenes;
   Vec<GLTFSkin> skins;
   Vec<GLTFTexture> textures;
@@ -273,7 +273,7 @@ struct GLTFRoot {
 
 class GLTFParser : public ParserBase {
 private:
-  ;
+  GLTFRoot mRoot;
 };
 
 class GLTFComposer : public ComposerBase {

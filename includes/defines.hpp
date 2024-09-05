@@ -16,6 +16,7 @@ using namespace TerreateCore::Defines;
 
 typedef TerreateCore::Core::UUID UUID;
 typedef TerreateCore::Core::TerreateObjectBase TerreateObjectBase;
+template <typename T> using Nullable = TerreateCore::Utils::Nullable<T>;
 
 using glm::slerp;
 
