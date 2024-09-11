@@ -93,11 +93,8 @@ Str BASE64::Encode(Byte const *data, Size const &size) {
       container <<= 8;
     }
 
-    std::cout << std::hex << container << std::endl;
-
     for (Byte j = 0; j < 4; ++j) {
       result += sTable[(container >> 26) & 0x3F];
-      /* std::cout << std::hex << ((container >> 26) & 0x3F) << std::endl; */
       container <<= 6;
     }
   }
@@ -164,28 +161,6 @@ Str BASE64::Decode(Byte const *data, Size const &size) {
       result += static_cast<char>(((idx1 & 0x3F) << 2) | ((idx2 & 0x30) >> 4));
       result += static_cast<char>(((idx2 & 0x0F) << 4) | ((idx3 & 0x3C) >> 2));
       result += static_cast<char>(((idx3 & 0x03) << 6) | (idx4 & 0x3F));
-    }
-  }
-
-  for (Size i = 0; i < size / 4; ++i) {
-    for (Byte j = 0; j < 4; ++j) {
-      if (data[i * 4 + j] != '=') {
-        Size idx = sTable.find(data[i * 4 + j]);
-        if (idx == Str::npos) {
-          break;
-        }
-
-        container += (idx & 0x3F);
-      }
-      container <<= 6;
-    }
-    container <<= 2;
-    std::cout << std::hex << container << std::endl;
-
-    for (Byte j = 0; j < 3; ++j) {
-      result += ((container & 0xFF0000) >> 16);
-      std::cout << std::hex << ((container & 0xFF0000) >> 16) << std::endl;
-      container <<= 8;
     }
   }
 
