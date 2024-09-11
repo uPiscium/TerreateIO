@@ -40,6 +40,11 @@ public:
   JSONException(Str const &message) : TerreateIOException(message) {}
 };
 
+class GLTFException : public TerreateIOException {
+public:
+  GLTFException(Str const &message) : TerreateIOException(message) {}
+};
+
 class ComposerException : public TerreateIOException {
 public:
   ComposerException(const char *message) : TerreateIOException(message) {}

@@ -15,6 +15,7 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
 #include "base.hpp"
+#include "buffer.hpp"
 #include "json.hpp"
 
 namespace TerreateIO::GLTF {
@@ -23,6 +24,9 @@ using namespace TerreateIO::Core;
 using namespace TerreateCore::Math;
 
 typedef JSON::JSONParser JSONParser;
+typedef JSON::Array Array;
+typedef JSON::Object Object;
+typedef JSON::JSON JSON;
 
 enum class GLTFComponentType {
   NONE = 0,
@@ -77,21 +81,21 @@ enum class GLTFTextureWrapping {
 };
 
 struct GLTFAccessor {
-  Nullable<Uint> bufferView;
-  Nullable<Uint> byteOffset;
   GLTFComponentType componentType = GLTFComponentType::NONE; // Required
+  Uint count = 0u;                                           // Required
+  GLTFType type = GLTFType::NONE;                            // Required
+  Nullable<Uint> bufferView;
+  Uint byteOffset = 0u;
   Bool normalized = false;
-  Uint count = 0u;                // Required
-  GLTFType type = GLTFType::NONE; // Required
-  Float *max = nullptr;
-  Float *min = nullptr;
+  Vec<Float> max;
+  Vec<Float> min;
   Str name = "";
   // Sparse sparse; // Sparse accessor is currently not supported
 };
 
 struct GLTFAnimationTarget {
-  Nullable<Uint> node;
   Str path = ""; // Required
+  Nullable<Uint> node;
 };
 
 struct GLTFAnimationChannel {
@@ -112,22 +116,22 @@ struct GLTFAnimation {
 };
 
 struct GLTFAsset {
+  Str version = ""; // Required
   Str copyright = "";
   Str generator = "";
-  Str version = ""; // Required
   Str minVersion = "";
 };
 
 struct GLTFBuffer {
-  Str uri = "";
   Uint byteLength = 0u; // Required
+  Str uri = "";
   Str name = "";
 };
 
 struct GLTFBufferView {
-  Uint buffer = 0u; // Required
-  Nullable<Uint> byteOffset;
+  Uint buffer = 0u;     // Required
   Uint byteLength = 0u; // Required
+  Uint byteOffset = 0u;
   Nullable<Uint> byteStride;
   GLTFBufferTarget target = GLTFBufferTarget::NONE;
   Str name = "";
@@ -141,10 +145,10 @@ struct GLTFOrthographic {
 };
 
 struct GLTFPerspective {
-  Nullable<Float> aspectRatio;
-  Float yfov = 0.0f; // Required
-  Nullable<Float> zfar;
+  Float yfov = 0.0f;  // Required
   Float znear = 0.0f; // Required
+  Nullable<Float> aspectRatio;
+  Nullable<Float> zfar;
 };
 
 struct GLTFCamera {
@@ -168,10 +172,10 @@ struct GLTFTextureInfo {
 
 struct GLTFPBRMetallicRoughness {
   vec4 baseColorFactor = vec4(1.0f);
-  GLTFTextureInfo baseColorTexture;
+  Nullable<GLTFTextureInfo> baseColorTexture;
   Float metallicFactor = 1.0f;
   Float roughnessFactor = 1.0f;
-  GLTFTextureInfo metallicRoughnessTexture;
+  Nullable<GLTFTextureInfo> metallicRoughnessTexture;
 };
 
 struct GLTFNormalTextureInfo {
@@ -188,10 +192,10 @@ struct GLTFOcclusionTextureInfo {
 
 struct GLTFMaterial {
   Str name = "";
-  GLTFPBRMetallicRoughness pbrMetallicRoughness;
-  GLTFNormalTextureInfo normalTexture;
-  GLTFOcclusionTextureInfo occlusionTexture;
-  GLTFTextureInfo emissiveTexture;
+  Nullable<GLTFPBRMetallicRoughness> pbrMetallicRoughness;
+  Nullable<GLTFNormalTextureInfo> normalTexture;
+  Nullable<GLTFOcclusionTextureInfo> occlusionTexture;
+  Nullable<GLTFTextureInfo> emissiveTexture;
   vec3 emissiveFactor = vec3(0.0f);
   GLTFAlphaMode alphaMode = GLTFAlphaMode::OPAQUE;
   Float alphaCutoff = 0.5f;
@@ -239,24 +243,24 @@ struct GLTFScene {
 };
 
 struct GLTFSkin {
+  Vec<Uint> joints; // Required
   Nullable<Uint> inverseBindMatrices;
   Nullable<Uint> skeleton;
-  Vec<Uint> joints; // Required
   Str name = "";
 };
 
 struct GLTFTexture {
-  Nullable<Uint> sampler;
   Uint source = 0u; // Required
+  Nullable<Uint> sampler;
   Str name = "";
 };
 
 struct GLTFRoot {
+  GLTFAsset asset; // Required
   Vec<Str> extensionsUsed;
   Vec<Str> extensionsRequired;
   Vec<GLTFAccessor> accessors;
   Vec<GLTFAnimation> animations;
-  GLTFAsset asset; // Required
   Vec<GLTFBuffer> buffers;
   Vec<GLTFBufferView> bufferViews;
   Vec<GLTFCamera> cameras;
@@ -271,9 +275,208 @@ struct GLTFRoot {
   Vec<GLTFTexture> textures;
 };
 
+namespace Utils {
+template <typename T>
+using EnumConverter = std::function<Bool(Str const &src, T &value)>;
+
+template <typename T>
+concept number = std::is_arithmetic_v<T>;
+
+Bool Extract(JSON const &json, Str const &key, JSON &value);
+Bool Extract(JSON const &json, Str const &key, Bool &value);
+Bool Extract(JSON const &json, Str const &key, Double &value);
+Bool Extract(JSON const &json, Str const &key, Str &value);
+Bool Extract(JSON const &json, Str const &key, Array &value);
+Bool Extract(JSON const &json, Str const &key, Object &value);
+
+Bool Extract(JSON const &json, Str const &key, Vec<Bool> &value);
+Bool Extract(JSON const &json, Str const &key, Vec<Double> &value);
+Bool Extract(JSON const &json, Str const &key, Vec<Str> &value);
+
+Bool Extract(JSON const &json, Str const &key, Map<Str, Bool> &value);
+Bool Extract(JSON const &json, Str const &key, Map<Str, Double> &value);
+Bool Extract(JSON const &json, Str const &key, Map<Str, Str> &value);
+
+template <enumtype T> Bool Extract(JSON const &json, Str const &key, T &value);
+template <enumtype T>
+Bool Extract(JSON const &json, Str const &key, T &value,
+             EnumConverter<T> converter);
+template <number T> Bool Extract(JSON const &json, Str const &key, T &value);
+template <number T>
+Bool Extract(JSON const &json, Str const &key, Vec<T> &value);
+template <number T>
+Bool Extract(JSON const &json, Str const &key, Nullable<T> &value);
+template <number T>
+Bool Extract(JSON const &json, Str const &key, Map<Str, T> &value);
+template <typename T>
+Bool Extract(JSON const &json, Str const &key, Nullable<T> &value);
+
+template <enumtype T> Bool Extract(JSON const &json, Str const &key, T &value) {
+  Double temp;
+  if (!Extract(json, key, temp)) {
+    return false;
+  }
+
+  value = static_cast<T>(temp);
+  return true;
+}
+
+template <enumtype T>
+Bool Extract(JSON const &json, Str const &key, T &value,
+             EnumConverter<T> converter) {
+  Str temp;
+  if (!Extract(json, key, temp)) {
+    return false;
+  }
+
+  return converter(temp, value);
+}
+
+template <number T> Bool Extract(JSON const &json, Str const &key, T &value) {
+  Double temp;
+  if (!Extract(json, key, temp)) {
+    return false;
+  }
+
+  value = static_cast<T>(temp);
+  return true;
+}
+
+template <number T>
+Bool Extract(JSON const &json, Str const &key, Vec<T> &value) {
+  Vec<Double> temp;
+  if (!Extract(json, key, temp)) {
+    return false;
+  }
+
+  value.resize(temp.size());
+  for (Uint i = 0; i < temp.size(); ++i) {
+    value[i] = static_cast<T>(temp[i]);
+  }
+
+  return true;
+}
+
+template <number T>
+Bool Extract(JSON const &json, Str const &key, Nullable<T> &value) {
+  T temp;
+  if (!Extract(json, key, temp)) {
+    return false;
+  }
+
+  value = temp;
+  return true;
+}
+
+template <number T>
+Bool Extract(JSON const &json, Str const &key, Map<Str, T> &value) {
+  Map<Str, Double> temp;
+  if (!Extract(json, key, temp)) {
+    return false;
+  }
+
+  for (auto const &[k, v] : temp) {
+    value.insert({k, static_cast<T>(v)});
+  }
+
+  return true;
+}
+
+template <typename T>
+Bool Extract(JSON const &json, Str const &key, Nullable<T> &value) {
+  T temp;
+  if (!Extract(json, key, temp)) {
+    return false;
+  }
+
+  value = temp;
+  return true;
+}
+
+GLTFType ToGLTFType(Str const &type);
+GLTFInterpolationType ToGLTFInterpolationType(Str const &type);
+GLTFCameraType ToGLTFCameraType(Str const &type);
+GLTFAlphaMode ToGLTFAlphaMode(Str const &mode);
+} // namespace Utils
+
 class GLTFParser : public ParserBase {
 private:
+  enum class ParseTargets {
+    ACCESSORS,
+    ANIMATIONS,
+    ASSET,
+    BUFFERS,
+    BUFFER_VIEWS,
+    CAMERAS,
+    IMAGES,
+    MATERIALS,
+    MESHES,
+    NODES,
+    SAMPLERS,
+    SCENES,
+    SKINS,
+    TEXTURES
+  };
+
+private:
+  JSON mJsonData;
+  Executor mExecutor;
   GLTFRoot mRoot;
+  Map<ParseTargets, Bool> mParsingStatus;
+
+private:
+  Bool LoadJson(ReadBuffer &buffer);
+
+  Bool ParseExtensionUsed(JSON const &json, Vec<Str> &extensionsUsed);
+  Bool ParseExtensionRequired(JSON const &json, Vec<Str> &extensionsRequired);
+  Bool ParseAccessors(JSON const &json, Vec<GLTFAccessor> &container);
+  Bool ParseAnimationTarget(JSON const &json, GLTFAnimationTarget &container);
+  Bool ParseAnimationChannels(JSON const &json,
+                              Vec<GLTFAnimationChannel> &container);
+  Bool ParseAnimationSamplers(JSON const &json,
+                              Vec<GLTFAnimationSampler> &container);
+  Bool ParseAnimations(JSON const &json, Vec<GLTFAnimation> &container);
+  Bool ParseAsset(JSON const &json, GLTFAsset &container);
+  Bool ParseBuffers(JSON const &json, Vec<GLTFBuffer> &container);
+  Bool ParseBufferViews(JSON const &json, Vec<GLTFBufferView> &container);
+  Bool ParseOrthographic(JSON const &json, GLTFOrthographic &container);
+  Bool ParsePerspective(JSON const &json, GLTFPerspective &container);
+  Bool ParseCameras(JSON const &json, Vec<GLTFCamera> &container);
+  Bool ParseImages(JSON const &json, Vec<GLTFImage> &container);
+  Bool ParseTextureInfo(JSON const &json, GLTFTextureInfo &container);
+  Bool ParseTextureInfo(JSON const &json, Nullable<GLTFTextureInfo> &container);
+  Bool ParsePBRMetallicRoughness(JSON const &json,
+                                 GLTFPBRMetallicRoughness &container);
+  Bool ParsePBRMetallicRoughness(JSON const &json,
+                                 Nullable<GLTFPBRMetallicRoughness> &container);
+  Bool ParseNormalTextureInfo(JSON const &json,
+                              GLTFNormalTextureInfo &container);
+  Bool ParseNormalTextureInfo(JSON const &json,
+                              Nullable<GLTFNormalTextureInfo> &container);
+  Bool ParseOcclusionTextureInfo(JSON const &json,
+                                 GLTFOcclusionTextureInfo &container);
+  Bool ParseOcclusionTextureInfo(JSON const &json,
+                                 Nullable<GLTFOcclusionTextureInfo> &container);
+  Bool ParseMaterials(JSON const &json, Vec<GLTFMaterial> &container);
+  Bool ParsePrimitives(JSON const &json, Vec<GLTFPrimitive> &container);
+  Bool ParseMeshes(JSON const &json, Vec<GLTFMesh> &container);
+  Bool ParseNodes(JSON const &json, Vec<GLTFNode> &container);
+  Bool ParseSamplers(JSON const &json, Vec<GLTFSampler> &container);
+  Bool ParseScenes(JSON const &json, Vec<GLTFScene> &container);
+  Bool ParseSkins(JSON const &json, Vec<GLTFSkin> &container);
+  Bool ParseTextures(JSON const &json, Vec<GLTFTexture> &container);
+
+  void ParseBinary();
+
+  Handle ParseGLTFMetadata();
+
+public:
+  GLTFParser() = default;
+  GLTFParser(Str const &path) : ParserBase(path) {}
+  ~GLTFParser() = default;
+
+  Bool Parse(ReadBuffer &buffer) override;
+  Bool Parse() override;
 };
 
 class GLTFComposer : public ComposerBase {

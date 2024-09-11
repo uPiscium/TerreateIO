@@ -79,6 +79,7 @@ template <typename T> using Function = std::function<T>;
 typedef std::mutex Mutex;
 typedef std::condition_variable ConditionVariable;
 typedef std::thread Thread;
+typedef std::exception_ptr ExceptionPtr;
 
 template <typename T, typename Container = std::deque<T>>
 using Queue = std::queue<T, Container>;
@@ -91,7 +92,8 @@ template <typename T> using Atomic = std::atomic<T>;
 template <typename T> using SharedFuture = std::shared_future<T>;
 template <typename T> using PackagedTask = std::packaged_task<T>;
 
-typedef SharedFuture<void> Future;
+typedef SharedFuture<void> Handle;
+typedef PackagedTask<void()> Task;
 
 // Chrono types
 namespace chrono = std::chrono;
