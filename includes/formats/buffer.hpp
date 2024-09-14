@@ -26,8 +26,10 @@ public:
         mSize(buffer.size()) {
     std::memcpy(mBuffer, buffer.data(), buffer.size());
   }
-  ReadBuffer(Byte *buffer, Size const &size)
-      : mBuffer(buffer), mCursor(mBuffer), mSize(size) {}
+  ReadBuffer(Byte const *buffer, Size const &size)
+      : mBuffer(new Byte[size]), mCursor(mBuffer), mSize(size) {
+    std::memcpy(mBuffer, buffer, size);
+  }
   ReadBuffer(ReadBuffer const &buffer)
       : mBuffer(new Byte[buffer.mSize]), mCursor(mBuffer), mSize(buffer.mSize) {
     std::memcpy(mBuffer, buffer.mBuffer, buffer.mSize);

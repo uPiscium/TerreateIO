@@ -11,6 +11,7 @@ Str const BASE64::sTable =
 ReadBuffer::~ReadBuffer() {
   if (mBuffer != nullptr) {
     delete[] mBuffer;
+    mBuffer = nullptr;
   }
 }
 
