@@ -18,6 +18,8 @@
 #include "buffer.hpp"
 #include "json.hpp"
 
+#include "../scene.hpp"
+
 namespace TerreateIO::GLTF {
 using namespace TerreateIO::Defines;
 using namespace TerreateIO::Core;
@@ -280,80 +282,27 @@ struct BinaryBuffer {
   Nullable<Uint> stride;
 };
 
-class GLTFDataContainer {
-public:
-  union Container {
-    Vec<Float> *scalarContainer;
-    Vec<vec2> *vec2Container;
-    Vec<vec3> *vec3Container;
-    Vec<vec4> *vec4Container;
-    Vec<mat2> *mat2Container;
-    Vec<mat3> *mat3Container;
-    Vec<mat4> *mat4Container;
-  };
-
+class GLTFObject {
 private:
   GLTFType mType;
-  Container mContainer;
+  Vec<Vec<Float>> mContainer;
 
 public:
-  GLTFDataContainer() : mType(GLTFType::NONE) {
-    mContainer.scalarContainer = nullptr;
+  GLTFObject() : mType(GLTFType::NONE) {}
+  GLTFObject(GLTFObject const &object) : mType(object.mType) {
+    this->SetData(object.mContainer);
   }
-  GLTFDataContainer(GLTFDataContainer const &container);
-  GLTFDataContainer(Float const *data, Uint const size) {
-    this->SetData(data, size);
-  }
-  GLTFDataContainer(Vec<Float> const &data) { this->SetData(data); }
-  GLTFDataContainer(vec2 const *data, Uint const size) {
-    this->SetData(data, size);
-  }
-  GLTFDataContainer(Vec<vec2> const &data) { this->SetData(data); }
-  GLTFDataContainer(vec3 const *data, Uint const size) {
-    this->SetData(data, size);
-  }
-  GLTFDataContainer(Vec<vec3> const &data) { this->SetData(data); }
-  GLTFDataContainer(vec4 const *data, Uint const size) {
-    this->SetData(data, size);
-  }
-  GLTFDataContainer(Vec<vec4> const &data) { this->SetData(data); }
-  GLTFDataContainer(mat2 const *data, Uint const size) {
-    this->SetData(data, size);
-  }
-  GLTFDataContainer(Vec<mat2> const &data) { this->SetData(data); }
-  GLTFDataContainer(mat3 const *data, Uint const size) {
-    this->SetData(data, size);
-  }
-  GLTFDataContainer(Vec<mat3> const &data) { this->SetData(data); }
-  GLTFDataContainer(mat4 const *data, Uint const size) {
-    this->SetData(data, size);
-  }
-  GLTFDataContainer(Vec<mat4> const &data) { this->SetData(data); }
-  ~GLTFDataContainer() { this->Clear(); }
+  GLTFObject(Vec<Vec<Float>> const &data) { this->SetData(data); }
 
   GLTFType GetType() const { return mType; }
-  Container GetContainer() const { return mContainer; }
-  Vec<Float> const &GetScalarContainer() const {
-    return *mContainer.scalarContainer;
-  }
-  Vec<vec2> const &GetVec2Container() const {
-    return *mContainer.vec2Container;
-  }
-  Vec<vec3> const &GetVec3Container() const {
-    return *mContainer.vec3Container;
-  }
-  Vec<vec4> const &GetVec4Container() const {
-    return *mContainer.vec4Container;
-  }
-  Vec<mat2> const &GetMat2Container() const {
-    return *mContainer.mat2Container;
-  }
-  Vec<mat3> const &GetMat3Container() const {
-    return *mContainer.mat3Container;
-  }
-  Vec<mat4> const &GetMat4Container() const {
-    return *mContainer.mat4Container;
-  }
+  Vec<Vec<Float>> const &GetContainer() const { return mContainer; }
+  Vec<Float> GetAsScalar() const;
+  Vec<vec2> GetAsVec2() const;
+  Vec<vec3> GetAsVec3() const;
+  Vec<vec4> GetAsVec4() const;
+  Vec<mat2> GetAsMat2() const;
+  Vec<mat3> GetAsMat3() const;
+  Vec<mat4> GetAsMat4() const;
 
   Bool IsScalar() const { return mType == GLTFType::SCALAR; }
   Bool IsVec2() const { return mType == GLTFType::VEC2; }
@@ -363,39 +312,10 @@ public:
   Bool IsMat3() const { return mType == GLTFType::MAT3; }
   Bool IsMat4() const { return mType == GLTFType::MAT4; }
 
-  void SetData(Float const *data, Uint const size);
-  void SetData(Vec<Float> const &data) {
-    this->SetData(data.data(), data.size());
-  }
-  void SetData(vec2 const *data, Uint const size);
-  void SetData(Vec<vec2> const &data) {
-    this->SetData(data.data(), data.size());
-  }
-  void SetData(vec3 const *data, Uint const size);
-  void SetData(Vec<vec3> const &data) {
-    this->SetData(data.data(), data.size());
-  }
-  void SetData(vec4 const *data, Uint const size);
-  void SetData(Vec<vec4> const &data) {
-    this->SetData(data.data(), data.size());
-  }
-  void SetData(mat2 const *data, Uint const size);
-  void SetData(Vec<mat2> const &data) {
-    this->SetData(data.data(), data.size());
-  }
-  void SetData(mat3 const *data, Uint const size);
-  void SetData(Vec<mat3> const &data) {
-    this->SetData(data.data(), data.size());
-  }
-  void SetData(mat4 const *data, Uint const size);
-  void SetData(Vec<mat4> const &data) {
-    this->SetData(data.data(), data.size());
-  }
+  void SetData(Vec<Vec<Float>> const &data) { mContainer = data; }
 
-  void Clear();
-
-  Bool Empty() const;
-  Uint Size() const;
+  Bool Empty() const { return mContainer.empty(); }
+  Uint Size() const { return mContainer.size(); }
 };
 
 namespace Utils {
@@ -553,8 +473,9 @@ private:
   JSON mJsonData;
   Executor mExecutor;
   GLTFRoot mRoot;
+  Scene::Scene mScene;
   Mutex mMutex;
-  Vec<GLTFDataContainer> mDataContainers;
+  Vec<GLTFObject> mBuffers;
   Map<ParseTargets, Bool> mParsingStatus;
 
 private:
@@ -601,23 +522,26 @@ private:
 
   void LoadBuffers(Vec<BinaryBuffer> &container);
   void ParseScalar(GLTFAccessor const &accessor, BinaryBuffer &buffer,
-                   GLTFDataContainer &container);
+                   GLTFObject &container);
   void ParseVec2(GLTFAccessor const &accessor, BinaryBuffer &buffer,
-                 GLTFDataContainer &container);
+                 GLTFObject &container);
   void ParseVec3(GLTFAccessor const &accessor, BinaryBuffer &buffer,
-                 GLTFDataContainer &container);
+                 GLTFObject &container);
   void ParseVec4(GLTFAccessor const &accessor, BinaryBuffer &buffer,
-                 GLTFDataContainer &container);
+                 GLTFObject &container);
   void ParseMat2(GLTFAccessor const &accessor, BinaryBuffer &buffer,
-                 GLTFDataContainer &container);
+                 GLTFObject &container);
   void ParseMat3(GLTFAccessor const &accessor, BinaryBuffer &buffer,
-                 GLTFDataContainer &container);
+                 GLTFObject &container);
   void ParseMat4(GLTFAccessor const &accessor, BinaryBuffer &buffer,
-                 GLTFDataContainer &container);
-  void ParseBufferData(Vec<GLTFDataContainer> &container);
-  void ParseBinary();
+                 GLTFObject &container);
+  void ParseBufferData(Vec<GLTFObject> &container);
+  Bool LoadVertexComponent(GLTFPrimitive const &primitive, Str const &name,
+                           GLTFObject &container);
+  void ParseMeshes(Vec<Model::Mesh> &container);
 
   Handle ParseGLTFMetadata();
+  void ParseGLTFBinaryData();
 
 public:
   GLTFParser() = default;

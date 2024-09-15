@@ -1,5 +1,6 @@
 #include "../../includes/formats/gltf.hpp"
 #include "../../includes/exceptions.hpp"
+#include "TerreateCore/defines.hpp"
 
 #include <iostream>
 
@@ -7,131 +8,98 @@ namespace TerreateIO::GLTF {
 using namespace TerreateIO::Defines;
 using namespace TerreateIO::Core;
 
-GLTFDataContainer::GLTFDataContainer(GLTFDataContainer const &container) {
-  mType = container.mType;
-  switch (mType) {
-  case GLTFType::SCALAR:
-    mContainer.scalarContainer =
-        new Vec<Float>(*container.mContainer.scalarContainer);
-    break;
-  case GLTFType::VEC2:
-    mContainer.vec2Container =
-        new Vec<vec2>(*container.mContainer.vec2Container);
-    break;
-  case GLTFType::VEC3:
-    mContainer.vec3Container =
-        new Vec<vec3>(*container.mContainer.vec3Container);
-    break;
-  case GLTFType::VEC4:
-    mContainer.vec4Container =
-        new Vec<vec4>(*container.mContainer.vec4Container);
-    break;
-  case GLTFType::MAT2:
-    mContainer.mat2Container =
-        new Vec<mat2>(*container.mContainer.mat2Container);
-    break;
-  case GLTFType::MAT3:
-    mContainer.mat3Container =
-        new Vec<mat3>(*container.mContainer.mat3Container);
-    break;
-  case GLTFType::MAT4:
-    mContainer.mat4Container =
-        new Vec<mat4>(*container.mContainer.mat4Container);
-    break;
-  default:
-    break;
+Vec<Float> GLTFObject::GetAsScalar() const {
+  if (mType != GLTFType::SCALAR) {
+    throw Exception::GLTFException("Invalid type");
   }
-}
 
-void GLTFDataContainer::SetData(Float const *data, Uint const size) {
-  this->Clear();
-  mType = GLTFType::SCALAR;
-  mContainer.scalarContainer = new Vec<Float>(data, data + size);
-}
-
-void GLTFDataContainer::SetData(vec2 const *data, Uint const size) {
-  this->Clear();
-  mType = GLTFType::VEC2;
-  mContainer.vec2Container = new Vec<vec2>(data, data + size);
-}
-
-void GLTFDataContainer::SetData(vec3 const *data, Uint const size) {
-  this->Clear();
-  mType = GLTFType::VEC3;
-  mContainer.vec3Container = new Vec<vec3>(data, data + size);
-}
-
-void GLTFDataContainer::SetData(vec4 const *data, Uint const size) {
-  this->Clear();
-  mType = GLTFType::VEC4;
-  mContainer.vec4Container = new Vec<vec4>(data, data + size);
-}
-
-void GLTFDataContainer::SetData(mat2 const *data, Uint const size) {
-  this->Clear();
-  mType = GLTFType::MAT2;
-  mContainer.mat2Container = new Vec<mat2>(data, data + size);
-}
-
-void GLTFDataContainer::SetData(mat3 const *data, Uint const size) {
-  this->Clear();
-  mType = GLTFType::MAT3;
-  mContainer.mat3Container = new Vec<mat3>(data, data + size);
-}
-
-void GLTFDataContainer::SetData(mat4 const *data, Uint const size) {
-  this->Clear();
-  mType = GLTFType::MAT4;
-  mContainer.mat4Container = new Vec<mat4>(data, data + size);
-}
-
-void GLTFDataContainer::Clear() {
-  switch (mType) {
-  case GLTFType::SCALAR:
-    if (mContainer.scalarContainer) {
-      delete mContainer.scalarContainer;
-      mContainer.scalarContainer = nullptr;
-    }
-    break;
-  case GLTFType::VEC2:
-    if (mContainer.vec2Container) {
-      delete mContainer.vec2Container;
-      mContainer.vec2Container = nullptr;
-    }
-    break;
-  case GLTFType::VEC3:
-    if (mContainer.vec3Container) {
-      delete mContainer.vec3Container;
-      mContainer.vec3Container = nullptr;
-    }
-    break;
-  case GLTFType::VEC4:
-    if (mContainer.vec4Container) {
-      delete mContainer.vec4Container;
-      mContainer.vec4Container = nullptr;
-    }
-    break;
-  case GLTFType::MAT2:
-    if (mContainer.mat2Container) {
-      delete mContainer.mat2Container;
-      mContainer.mat2Container = nullptr;
-    }
-    break;
-  case GLTFType::MAT3:
-    if (mContainer.mat3Container) {
-      delete mContainer.mat3Container;
-      mContainer.mat3Container = nullptr;
-    }
-    break;
-  case GLTFType::MAT4:
-    if (mContainer.mat4Container) {
-      delete mContainer.mat4Container;
-      mContainer.mat4Container = nullptr;
-    }
-    break;
-  default:
-    break;
+  Vec<Float> result;
+  for (auto &elem : mContainer) {
+    result.push_back(elem[0]);
   }
+
+  return result;
+}
+
+Vec<vec2> GLTFObject::GetAsVec2() const {
+  if (mType != GLTFType::VEC2) {
+    throw Exception::GLTFException("Invalid type");
+  }
+
+  Vec<vec2> result;
+  for (auto &elem : mContainer) {
+    result.push_back(vec2(elem[0], elem[1]));
+  }
+
+  return result;
+}
+
+Vec<vec3> GLTFObject::GetAsVec3() const {
+  if (mType != GLTFType::VEC3) {
+    throw Exception::GLTFException("Invalid type");
+  }
+
+  Vec<vec3> result;
+  for (auto &elem : mContainer) {
+    result.push_back(vec3(elem[0], elem[1], elem[2]));
+  }
+
+  return result;
+}
+
+Vec<vec4> GLTFObject::GetAsVec4() const {
+  if (mType != GLTFType::VEC4) {
+    throw Exception::GLTFException("Invalid type");
+  }
+
+  Vec<vec4> result;
+  for (auto &elem : mContainer) {
+    result.push_back(vec4(elem[0], elem[1], elem[2], elem[3]));
+  }
+
+  return result;
+}
+
+Vec<mat2> GLTFObject::GetAsMat2() const {
+  if (mType != GLTFType::MAT2) {
+    throw Exception::GLTFException("Invalid type");
+  }
+
+  Vec<mat2> result;
+  for (auto &elem : mContainer) {
+    result.push_back(mat2(elem[0], elem[1], elem[2], elem[3]));
+  }
+
+  return result;
+}
+
+Vec<mat3> GLTFObject::GetAsMat3() const {
+  if (mType != GLTFType::MAT3) {
+    throw Exception::GLTFException("Invalid type");
+  }
+
+  Vec<mat3> result;
+  for (auto &elem : mContainer) {
+    result.push_back(mat3(elem[0], elem[1], elem[2], elem[3], elem[4], elem[5],
+                          elem[6], elem[7], elem[8]));
+  }
+
+  return result;
+}
+
+Vec<mat4> GLTFObject::GetAsMat4() const {
+  if (mType != GLTFType::MAT4) {
+    throw Exception::GLTFException("Invalid type");
+  }
+
+  Vec<mat4> result;
+  for (auto &elem : mContainer) {
+    result.push_back(mat4(elem[0], elem[1], elem[2], elem[3], elem[4], elem[5],
+                          elem[6], elem[7], elem[8], elem[9], elem[10],
+                          elem[11], elem[12], elem[13], elem[14], elem[15]));
+  }
+
+  return result;
 }
 
 namespace Utils {
@@ -1386,6 +1354,10 @@ void GLTFParser::LoadBuffers(Vec<BinaryBuffer> &container) {
 
   for (auto &bufferView : mRoot.bufferViews) {
     BinaryBuffer binaryStorage;
+    if (bufferView.buffer >= bufferStorages.size()) {
+      throw Exception::GLTFException("Invalid buffer index");
+    }
+
     binaryStorage.buffer = bufferStorages[bufferView.buffer].Sub(
         bufferView.byteOffset, bufferView.byteLength);
     binaryStorage.stride = bufferView.byteStride;
@@ -1394,7 +1366,7 @@ void GLTFParser::LoadBuffers(Vec<BinaryBuffer> &container) {
 }
 
 void GLTFParser::ParseScalar(GLTFAccessor const &accessor, BinaryBuffer &buffer,
-                             GLTFDataContainer &container) {
+                             GLTFObject &container) {
   ReadBuffer target = buffer.buffer;
   target.SetCursor(accessor.byteOffset);
 
@@ -1404,18 +1376,18 @@ void GLTFParser::ParseScalar(GLTFAccessor const &accessor, BinaryBuffer &buffer,
              Utils::GetGLTFComponentTypeSize(accessor.componentType);
   }
 
-  Vec<Float> values;
+  Vec<Vec<Float>> values;
   for (Uint i = 0; i < accessor.count; ++i) {
     Float scalar;
     Utils::Extract(scalar, accessor.componentType, target);
     target.Skip(stride);
-    values.push_back(scalar);
+    values.push_back({scalar});
   }
   container.SetData(values);
 }
 
 void GLTFParser::ParseVec2(GLTFAccessor const &accessor, BinaryBuffer &buffer,
-                           GLTFDataContainer &container) {
+                           GLTFObject &container) {
   ReadBuffer target = buffer.buffer;
   target.SetCursor(accessor.byteOffset);
 
@@ -1425,11 +1397,11 @@ void GLTFParser::ParseVec2(GLTFAccessor const &accessor, BinaryBuffer &buffer,
              2 * Utils::GetGLTFComponentTypeSize(accessor.componentType);
   }
 
-  Vec<vec2> values;
+  Vec<Vec<Float>> values;
   for (Uint i = 0; i < accessor.count; ++i) {
-    vec2 vec;
-    Utils::Extract(vec.x, accessor.componentType, target);
-    Utils::Extract(vec.y, accessor.componentType, target);
+    Vec<Float> vec(2);
+    Utils::Extract(vec[0], accessor.componentType, target);
+    Utils::Extract(vec[1], accessor.componentType, target);
     target.Skip(stride);
     values.push_back(vec);
   }
@@ -1437,7 +1409,7 @@ void GLTFParser::ParseVec2(GLTFAccessor const &accessor, BinaryBuffer &buffer,
 }
 
 void GLTFParser::ParseVec3(GLTFAccessor const &accessor, BinaryBuffer &buffer,
-                           GLTFDataContainer &container) {
+                           GLTFObject &container) {
   ReadBuffer target = buffer.buffer;
   target.SetCursor(accessor.byteOffset);
 
@@ -1447,12 +1419,12 @@ void GLTFParser::ParseVec3(GLTFAccessor const &accessor, BinaryBuffer &buffer,
              3 * Utils::GetGLTFComponentTypeSize(accessor.componentType);
   }
 
-  Vec<vec3> values;
+  Vec<Vec<Float>> values;
   for (Uint i = 0; i < accessor.count; ++i) {
-    vec3 vec;
-    Utils::Extract(vec.x, accessor.componentType, target);
-    Utils::Extract(vec.y, accessor.componentType, target);
-    Utils::Extract(vec.z, accessor.componentType, target);
+    Vec<Float> vec(3);
+    Utils::Extract(vec[0], accessor.componentType, target);
+    Utils::Extract(vec[1], accessor.componentType, target);
+    Utils::Extract(vec[2], accessor.componentType, target);
     target.Skip(stride);
     values.push_back(vec);
   }
@@ -1460,7 +1432,7 @@ void GLTFParser::ParseVec3(GLTFAccessor const &accessor, BinaryBuffer &buffer,
 }
 
 void GLTFParser::ParseVec4(GLTFAccessor const &accessor, BinaryBuffer &buffer,
-                           GLTFDataContainer &container) {
+                           GLTFObject &container) {
   ReadBuffer target = buffer.buffer;
   target.SetCursor(accessor.byteOffset);
 
@@ -1470,13 +1442,13 @@ void GLTFParser::ParseVec4(GLTFAccessor const &accessor, BinaryBuffer &buffer,
              4 * Utils::GetGLTFComponentTypeSize(accessor.componentType);
   }
 
-  Vec<vec4> values;
+  Vec<Vec<Float>> values;
   for (Uint i = 0; i < accessor.count; ++i) {
-    vec4 vec;
-    Utils::Extract(vec.x, accessor.componentType, target);
-    Utils::Extract(vec.y, accessor.componentType, target);
-    Utils::Extract(vec.z, accessor.componentType, target);
-    Utils::Extract(vec.w, accessor.componentType, target);
+    Vec<Float> vec(4);
+    Utils::Extract(vec[0], accessor.componentType, target);
+    Utils::Extract(vec[1], accessor.componentType, target);
+    Utils::Extract(vec[2], accessor.componentType, target);
+    Utils::Extract(vec[3], accessor.componentType, target);
     target.Skip(stride);
     values.push_back(vec);
   }
@@ -1484,7 +1456,7 @@ void GLTFParser::ParseVec4(GLTFAccessor const &accessor, BinaryBuffer &buffer,
 }
 
 void GLTFParser::ParseMat2(GLTFAccessor const &accessor, BinaryBuffer &buffer,
-                           GLTFDataContainer &container) {
+                           GLTFObject &container) {
   ReadBuffer target = buffer.buffer;
   target.SetCursor(accessor.byteOffset);
 
@@ -1499,26 +1471,26 @@ void GLTFParser::ParseMat2(GLTFAccessor const &accessor, BinaryBuffer &buffer,
     stride -= 2 * 2; // Padding size
   }
 
-  Vec<mat2> values;
+  Vec<Vec<Float>> values;
   for (Uint i = 0; i < accessor.count; ++i) {
-    mat2 mat;
+    Vec<Float> mat(4);
     for (Uint j = 0; j < 2; ++j) {
-      Utils::Extract(mat[j].x, accessor.componentType, target);
-      Utils::Extract(mat[j].y, accessor.componentType, target);
+      Utils::Extract(mat[j * 2], accessor.componentType, target);
+      Utils::Extract(mat[j * 2 + 1], accessor.componentType, target);
 
       if (accessor.componentType == GLTFComponentType::BYTE ||
           accessor.componentType == GLTFComponentType::UNSIGNED_BYTE) {
         target.Skip(2); // Skip padding
       }
-      target.Skip(stride);
     }
+    target.Skip(stride);
     values.push_back(mat);
   }
   container.SetData(values);
 }
 
 void GLTFParser::ParseMat3(GLTFAccessor const &accessor, BinaryBuffer &buffer,
-                           GLTFDataContainer &container) {
+                           GLTFObject &container) {
   ReadBuffer target = buffer.buffer;
   target.SetCursor(accessor.byteOffset);
 
@@ -1541,13 +1513,13 @@ void GLTFParser::ParseMat3(GLTFAccessor const &accessor, BinaryBuffer &buffer,
     break;
   }
 
-  Vec<mat3> values;
+  Vec<Vec<Float>> values;
   for (Uint i = 0; i < accessor.count; ++i) {
-    mat3 mat;
+    Vec<Float> mat(9);
     for (Uint j = 0; j < 3; ++j) {
-      Utils::Extract(mat[j].x, accessor.componentType, target);
-      Utils::Extract(mat[j].y, accessor.componentType, target);
-      Utils::Extract(mat[j].z, accessor.componentType, target);
+      Utils::Extract(mat[j * 3], accessor.componentType, target);
+      Utils::Extract(mat[j * 3 + 1], accessor.componentType, target);
+      Utils::Extract(mat[j * 3 + 2], accessor.componentType, target);
 
       switch (accessor.componentType) {
       case GLTFComponentType::BYTE:
@@ -1561,15 +1533,15 @@ void GLTFParser::ParseMat3(GLTFAccessor const &accessor, BinaryBuffer &buffer,
       default:
         break;
       }
-      target.Skip(stride);
     }
+    target.Skip(stride);
     values.push_back(mat);
   }
   container.SetData(values);
 }
 
 void GLTFParser::ParseMat4(GLTFAccessor const &accessor, BinaryBuffer &buffer,
-                           GLTFDataContainer &container) {
+                           GLTFObject &container) {
   ReadBuffer target = buffer.buffer;
   target.SetCursor(accessor.byteOffset);
 
@@ -1579,22 +1551,21 @@ void GLTFParser::ParseMat4(GLTFAccessor const &accessor, BinaryBuffer &buffer,
              16 * Utils::GetGLTFComponentTypeSize(accessor.componentType);
   }
 
-  Vec<mat4> values;
+  Vec<Vec<Float>> values;
   for (Uint i = 0; i < accessor.count; ++i) {
-    mat4 mat;
+    Vec<Float> mat(16);
     for (Uint j = 0; j < 4; ++j) {
-      Utils::Extract(mat[j].x, accessor.componentType, target);
-      Utils::Extract(mat[j].y, accessor.componentType, target);
-      Utils::Extract(mat[j].z, accessor.componentType, target);
-      Utils::Extract(mat[j].w, accessor.componentType, target);
-      target.Skip(stride);
+      Utils::Extract(mat[j * 4], accessor.componentType, target);
+      Utils::Extract(mat[j * 4 + 1], accessor.componentType, target);
+      Utils::Extract(mat[j * 4 + 2], accessor.componentType, target);
+      Utils::Extract(mat[j * 4 + 3], accessor.componentType, target);
     }
     values.push_back(mat);
   }
   container.SetData(values);
 }
 
-void GLTFParser::ParseBufferData(Vec<GLTFDataContainer> &container) {
+void GLTFParser::ParseBufferData(Vec<GLTFObject> &container) {
   Vec<BinaryBuffer> binaryStorages;
   this->LoadBuffers(binaryStorages);
 
@@ -1604,9 +1575,13 @@ void GLTFParser::ParseBufferData(Vec<GLTFDataContainer> &container) {
     if (!accessor.bufferView.Valid()) {
       continue;
     }
+
+    if (*accessor.bufferView >= binaryStorages.size()) {
+      throw Exception::GLTFException("Invalid buffer view index");
+    }
     BinaryBuffer binaryStorage = binaryStorages[*accessor.bufferView];
 
-    GLTFDataContainer data;
+    GLTFObject data;
     switch (accessor.type) {
     case GLTFType::SCALAR:
       this->ParseScalar(accessor, binaryStorage, data);
@@ -1633,6 +1608,97 @@ void GLTFParser::ParseBufferData(Vec<GLTFDataContainer> &container) {
       throw Exception::GLTFException("Invalid accessor type");
     }
     container.push_back(data);
+  }
+}
+
+Bool GLTFParser::LoadVertexComponent(GLTFPrimitive const &primitive,
+                                     Str const &name, GLTFObject &container) {
+  if (!primitive.attributes.contains(name)) {
+    return false;
+  }
+
+  Uint index = primitive.attributes.at(name);
+  if (index >= mBuffers.size()) {
+    throw Exception::GLTFException("Invalid accessor index");
+  }
+
+  container = mBuffers[index];
+  return true;
+}
+
+void GLTFParser::ParseMeshes(Vec<Model::Mesh> &container) {
+  container.clear();
+
+  for (auto &mesh : mRoot.meshes) {
+    Model::Mesh msh;
+
+    if (mesh.name.empty()) {
+      msh.SetName("Mesh" + std::to_string(container.size()));
+    } else {
+      msh.SetName(mesh.name);
+    }
+
+    for (auto &primitive : mesh.primitives) {
+      GLTFObject position;
+      if (!this->LoadVertexComponent(primitive, "POSITION", position)) {
+        throw Exception::GLTFException("No position data");
+      }
+
+      if (position.GetType() != GLTFType::VEC3) {
+        throw Exception::GLTFException("Invalid position data type");
+      }
+      msh.AddVertexDataComponent("iPosition", position.GetContainer());
+
+      GLTFObject normal;
+      if (this->LoadVertexComponent(primitive, "NORMAL", normal)) {
+        if (normal.GetType() != GLTFType::VEC3) {
+          throw Exception::GLTFException("Invalid normal data type");
+        }
+        msh.AddVertexDataComponent("iNormal", normal.GetContainer());
+      }
+
+      GLTFObject tangent;
+      if (this->LoadVertexComponent(primitive, "TANGENT", tangent)) {
+        if (tangent.GetType() != GLTFType::VEC4) {
+          throw Exception::GLTFException("Invalid tangent data type");
+        }
+        msh.AddVertexDataComponent("iTangent", tangent.GetContainer());
+      }
+
+      GLTFObject texCoord;
+      if (this->LoadVertexComponent(primitive, "TEXCOORD_0", texCoord)) {
+        if (texCoord.GetType() != GLTFType::VEC2) {
+          throw Exception::GLTFException("Invalid texcoord data type");
+        }
+        msh.AddVertexDataComponent("iTexCoord", texCoord.GetContainer());
+      }
+
+      GLTFObject color;
+      if (this->LoadVertexComponent(primitive, "COLOR_0", color)) {
+        if (color.GetType() != GLTFType::VEC4) {
+          throw Exception::GLTFException("Invalid color data type");
+        }
+        msh.AddVertexDataComponent("iColor", color.GetContainer());
+      }
+
+      GLTFObject joint;
+      if (this->LoadVertexComponent(primitive, "JOINTS_0", joint)) {
+        if (joint.GetType() != GLTFType::VEC4) {
+          throw Exception::GLTFException("Invalid joint data type");
+        }
+        msh.AddVertexDataComponent("iJoint", joint.GetContainer());
+      }
+
+      GLTFObject weight;
+      if (this->LoadVertexComponent(primitive, "WEIGHTS_0", weight)) {
+        if (weight.GetType() != GLTFType::VEC4) {
+          throw Exception::GLTFException("Invalid weight data type");
+        }
+        msh.AddVertexDataComponent("iWeight", weight.GetContainer());
+      }
+    }
+
+    container.push_back(msh);
   }
 }
 
@@ -1750,7 +1816,7 @@ Bool GLTFParser::Parse(ReadBuffer &buffer) {
   this->LoadJson(buffer);
   Handle metadataHandle = this->ParseGLTFMetadata();
   mExecutor.WaitForAll();
-  this->ParseBufferData(mDataContainers);
+  this->ParseBufferData(mBuffers);
   return true;
 }
 
