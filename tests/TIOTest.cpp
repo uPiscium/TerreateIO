@@ -3,11 +3,12 @@
 #include <iostream>
 
 using namespace TerreateIO;
+using namespace TerreateIO::Defines;
 
 int main() {
-  JSON::JSONParser parser("tests/resources/test.json");
-  bool s = parser.Parse();
-  JSON::JSON json = parser.GetRoot();
-  std::cout << json << std::endl;
+  GLTF::GLTFParser parser("tests/resources/Cube/Cube.gltf");
+  std::cout << parser.Parse() << std::endl;
+
+  std::cout << parser.GetGLTFInfo() << std::endl;
   return 0;
 }

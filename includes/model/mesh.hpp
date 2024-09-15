@@ -16,6 +16,7 @@ struct Attribute {
 
 class Mesh : public TerreateObjectBase {
 private:
+  Str mName;
   Map<Str, Vec<Vec<Float>>> mVertexDataComponents;
   Vec<Vec<Uint>> mVertexConstructionIndices;
   Vec<Vec<Uint>> mFaceIndices;
@@ -24,12 +25,12 @@ private:
   Vec<Attribute> mRawVertexDataAttributes;
   Bool mRawData = false;
 
-  Material mMaterial;
-  Skeleton mSkeleton;
+  Uint mMaterial = 0u;
 
 public:
   Mesh() {}
 
+  Str const &GetName() const { return mName; }
   Map<Str, Vec<Vec<Float>>> const &GetVertexDataComponents() const {
     return mVertexDataComponents;
   }
@@ -41,17 +42,16 @@ public:
   Vec<Attribute> const &GetRawVertexDataAttributes() const {
     return mRawVertexDataAttributes;
   }
-  Material const &GetMaterial() const { return mMaterial; }
-  Skeleton const &GetSkeleton() const { return mSkeleton; }
+  Uint const &GetMaterial() const { return mMaterial; }
 
+  void SetName(Str const &name) { mName = name; }
   void SetVertexConstructionIndices(Vec<Vec<Uint>> const &indices) {
     mVertexConstructionIndices = indices;
   }
   void SetFaceIndices(Vec<Vec<Uint>> const &indices) { mFaceIndices = indices; }
   void SetRawVertexData(Vec<Float> const &data,
                         Vec<Attribute> const &attributes);
-  void SetMaterial(Material const &material) { mMaterial = material; }
-  void SetSkeleton(Skeleton const &skeleton) { mSkeleton = skeleton; }
+  void SetMaterial(Uint const &material) { mMaterial = material; }
 
   Bool const &IsRawData() const { return mRawData; }
 

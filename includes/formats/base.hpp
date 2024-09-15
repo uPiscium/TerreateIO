@@ -10,11 +10,17 @@ using namespace TerreateIO::Defines;
 class ParserBase : public TerreateObjectBase {
 protected:
   Str mFilePath;
+  Str mParent;
+  Vec<Str> mPath;
 
 public:
   ParserBase() {}
-  ParserBase(Str const &path) : mFilePath(path) {}
+  ParserBase(Str const &path);
   virtual ~ParserBase() override {}
+
+  Str const &GetFilePath() const { return mFilePath; }
+  Str const &GetParent() const { return mParent; }
+  Vec<Str> const &GetPath() const { return mPath; }
 
   virtual Bool Parse(ReadBuffer &buffer) = 0;
   virtual Bool Parse() = 0;

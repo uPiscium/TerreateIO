@@ -13,9 +13,11 @@
 
 namespace TerreateIO::Defines {
 using namespace TerreateCore::Defines;
+using namespace TerreateCore::Utils;
 
 typedef TerreateCore::Core::UUID UUID;
 typedef TerreateCore::Core::TerreateObjectBase TerreateObjectBase;
+template <enumtype T> using BitFlag = TerreateCore::Core::BitFlag<T>;
 
 using glm::slerp;
 

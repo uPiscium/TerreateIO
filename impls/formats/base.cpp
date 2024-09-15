@@ -4,6 +4,17 @@
 namespace TerreateIO::Core {
 using namespace TerreateIO::Defines;
 
+ParserBase::ParserBase(Str const &path) : mFilePath(path) {
+  auto slash = mFilePath.find_first_of('/');
+  mParent = mFilePath.substr(0, mFilePath.find_last_of('/'));
+  Str copy = mFilePath;
+  while (slash != Str::npos) {
+    mPath.push_back(copy.substr(0, slash));
+    copy = copy.substr(slash + 1);
+    slash = copy.find_first_of('/');
+  }
+}
+
 ReadBuffer ParserBase::LoadFile(Str const &path) {
   InputFileStream file(path);
   if (!file.is_open()) {
