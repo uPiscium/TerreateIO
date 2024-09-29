@@ -3,7 +3,7 @@
 
 #include "../defines.hpp"
 
-namespace TerreateIO::Model {
+namespace TerreateIO::Container {
 using namespace TerreateIO::Defines;
 
 enum class CameraType { PERSPECTIVE, ORTHOGRAPHIC };
@@ -43,6 +43,6 @@ public:
   Bool IsPerspective() const { return mType == CameraType::PERSPECTIVE; }
   Bool IsOrthographic() const { return mType == CameraType::ORTHOGRAPHIC; }
 };
-} // namespace TerreateIO::Model
+} // namespace TerreateIO::Container
 
 #endif // __TERREATEIO_MODEL_CAMERA_HPP__

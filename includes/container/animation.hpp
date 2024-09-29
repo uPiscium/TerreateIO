@@ -3,7 +3,7 @@
 
 #include "../defines.hpp"
 
-namespace TerreateIO::Model {
+namespace TerreateIO::Container {
 using namespace TerreateIO::Defines;
 using namespace TerreateCore::Math;
 
@@ -75,6 +75,6 @@ public:
     return t < 0.5 ? a : b;
   }
 };
-} // namespace TerreateIO::Model
+} // namespace TerreateIO::Container
 
 #endif // __TERREATEIO_MODEL_ANIMATION_HPP__

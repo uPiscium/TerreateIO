@@ -3,7 +3,7 @@
 
 #include "../defines.hpp"
 
-namespace TerreateIO::Model {
+namespace TerreateIO::Container {
 using namespace TerreateIO::Defines;
 
 struct Color {
@@ -156,6 +156,6 @@ public:
   Material &operator=(Material const &material);
   Material &operator=(Material &&material);
 };
-} // namespace TerreateIO::Model
+} // namespace TerreateIO::Container
 
 #endif // __TERREATEIO_MODEL_MATERIAL_HPP__

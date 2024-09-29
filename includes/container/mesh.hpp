@@ -5,7 +5,7 @@
 #include "material.hpp"
 #include "skeleton.hpp"
 
-namespace TerreateIO::Model {
+namespace TerreateIO::Container {
 using namespace TerreateIO::Defines;
 
 struct Attribute {
@@ -58,6 +58,6 @@ public:
   void AddVertexDataComponent(Str const &name,
                               Vec<Vec<Float>> const &component);
 };
-} // namespace TerreateIO::Model
+} // namespace TerreateIO::Container
 
 #endif // __TERREATEIO_MODEL_MESH_HPP__
