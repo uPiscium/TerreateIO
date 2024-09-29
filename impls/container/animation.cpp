@@ -1,7 +1,6 @@
-#include "../../includes/model/animation.hpp"
-#include "glm/ext/quaternion_common.hpp"
+#include "../../includes/container/animation.hpp"
 
-namespace TerreateIO::Model {
+namespace TerreateIO::Container {
 using namespace TerreateIO::Defines;
 using namespace TerreateCore::Math;
 
@@ -47,4 +46,4 @@ Frame Animation::Linear(Frame const &a, Frame const &b, Double const &t) {
       (b.transform.translation - a.transform.translation) * (Float)t;
   return {a.time + (b.time - a.time) * t, transform};
 }
-} // namespace TerreateIO::Model
+} // namespace TerreateIO::Container

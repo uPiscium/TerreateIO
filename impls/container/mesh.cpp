@@ -1,6 +1,6 @@
-#include "../../includes/model/mesh.hpp"
+#include "../../includes/container/mesh.hpp"
 
-namespace TerreateIO::Model {
+namespace TerreateIO::Container {
 using namespace TerreateIO::Defines;
 
 void Mesh::SetRawVertexData(Vec<Float> const &data,
@@ -18,4 +18,4 @@ void Mesh::AddVertexDataComponent(Str const &name,
     mVertexDataComponents[name] = component;
   }
 }
-} // namespace TerreateIO::Model
+} // namespace TerreateIO::Container

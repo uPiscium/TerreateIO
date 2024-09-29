@@ -9,7 +9,7 @@ message(STATUS "C++ standard : " ${CMAKE_CXX_STANDARD})
 
 include(FetchContent)
 
-function(CloneTerreateCore)
+function(cloneterreatecore)
   message(STATUS "Cloning TerreateCore...")
   set(TERREATECORE_BUILD_TESTS OFF)
   FetchContent_Declare(
@@ -20,19 +20,21 @@ function(CloneTerreateCore)
   message(STATUS "TerreateCore cloned.")
 endfunction()
 
-function(SetIncludes)
+function(setincludes)
   target_include_directories(${PROJECT_NAME} PUBLIC ../includes/deps)
   target_include_directories(${PROJECT_NAME} PUBLIC ../includes)
 endfunction()
 
-function(SetLibs)
+function(setlibs)
   cloneterreatecore()
   target_link_libraries(${PROJECT_NAME} PUBLIC TerreateCore)
 endfunction()
 
-function(Build)
-  add_library(${PROJECT_NAME} STATIC model/animation.cpp model/material.cpp
-                                     model/mesh.cpp model/skeleton.cpp gltf.cpp)
+function(build)
+  add_library(
+    ${PROJECT_NAME} STATIC
+    container/animation.cpp container/material.cpp container/mesh.cpp
+    container/skeleton.cpp importer/gltf.cpp)
   set_target_properties(
     ${PROJECT_NAME} PROPERTIES ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib
                                LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)

@@ -1,6 +1,6 @@
-#include "../../includes/model/material.hpp"
+#include "../../includes/container/material.hpp"
 
-namespace TerreateIO::Model {
+namespace TerreateIO::Container {
 using namespace TerreateIO::Defines;
 
 Color &Color::operator=(Color const &color) {
@@ -222,4 +222,4 @@ Material &Material::operator=(Material &&material) {
 
   return *this;
 }
-} // namespace TerreateIO::Model
+} // namespace TerreateIO::Container
