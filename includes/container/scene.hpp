@@ -11,6 +11,7 @@ using namespace TerreateIO::Defines;
 
 class Stage : public TerreateObjectBase {
 private:
+  Str mName;
   Vec<Stage> mChildren;
   Vec<Camera> mCameras;
   Vec<Uint> mMeshIndices;
@@ -20,9 +21,14 @@ public:
   Stage() = default;
   Stage(Stage const &stage) = default;
 
+  Str const &GetName() const { return mName; }
   Vec<Stage> const &GetChildren() const { return mChildren; }
   Vec<Camera> const &GetCameras() const { return mCameras; }
   Vec<Uint> const &GetMeshIndices() const { return mMeshIndices; }
+  mat4 const &GetTransform() const { return mTransform; }
+
+  void SetName(Str const &name) { mName = name; }
+  void SetTransform(mat4 const &transform) { mTransform = transform; }
 
   void AddChild(Stage const &child) { mChildren.push_back(child); }
   void AddCamera(Camera const &camera) { mCameras.push_back(camera); }
@@ -35,6 +41,7 @@ public:
 
 class Scene : public TerreateObjectBase {
 private:
+  Str mName;
   Vec<Mesh> mMeshes;
   Vec<Stage> mStages;
   Vec<Animation> mAnimations;
@@ -43,8 +50,12 @@ public:
   Scene() = default;
   Scene(Scene const &scene) = default;
 
+  Str const &GetName() const { return mName; }
   Vec<Mesh> const &GetMeshes() const { return mMeshes; }
   Vec<Animation> const &GetAnimations() const { return mAnimations; }
+  Vec<Stage> const &GetStages() const { return mStages; }
+
+  void SetName(Str const &name) { mName = name; }
 
   void AddMesh(Mesh const &mesh) { mMeshes.push_back(mesh); }
   void AddStage(Stage const &stage) { mStages.push_back(stage); }

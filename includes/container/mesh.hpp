@@ -18,6 +18,10 @@ class Mesh : public TerreateObjectBase {
 private:
   Str mName;
   Map<Str, Vec<Vec<Float>>> mVertexDataComponents;
+  Vec<Vec<vec3>> mPositionMorphTargets;
+  Vec<Vec<vec3>> mNormalMorphTargets;
+  Vec<Vec<vec3>> mTangentMorphTargets;
+  Vec<Float> mMorphWeights;
   Vec<Vec<Uint>> mVertexConstructionIndices;
   Vec<Vec<Uint>> mFaceIndices;
 
@@ -34,6 +38,16 @@ public:
   Map<Str, Vec<Vec<Float>>> const &GetVertexDataComponents() const {
     return mVertexDataComponents;
   }
+  Vec<Vec<vec3>> const &GetPositionMorphTargets() const {
+    return mPositionMorphTargets;
+  }
+  Vec<Vec<vec3>> const &GetNormalMorphTargets() const {
+    return mNormalMorphTargets;
+  }
+  Vec<Vec<vec3>> const &GetTangentMorphTargets() const {
+    return mTangentMorphTargets;
+  }
+  Vec<Float> const &GetMorphWeights() const { return mMorphWeights; }
   Vec<Vec<Uint>> const &GetVertexConstructionIndices() const {
     return mVertexConstructionIndices;
   }
@@ -57,6 +71,16 @@ public:
 
   void AddVertexDataComponent(Str const &name,
                               Vec<Vec<Float>> const &component);
+  void AddPositionMorphTarget(Vec<vec3> const &target) {
+    mPositionMorphTargets.push_back(target);
+  }
+  void AddNormalMorphTarget(Vec<vec3> const &target) {
+    mNormalMorphTargets.push_back(target);
+  }
+  void AddTangentMorphTarget(Vec<vec3> const &target) {
+    mTangentMorphTargets.push_back(target);
+  }
+  void AddMorphWeight(Float const &weight) { mMorphWeights.push_back(weight); }
 };
 } // namespace TerreateIO::Container
 
