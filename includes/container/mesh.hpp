@@ -2,11 +2,10 @@
 #define __TERREATEIO_MODEL_MESH_HPP__
 
 #include "../defines.hpp"
-#include "material.hpp"
-#include "skeleton.hpp"
 
 namespace TerreateIO::Container {
 using namespace TerreateIO::Defines;
+using namespace TerreateCore::Math;
 
 struct Attribute {
   Ulong size;
@@ -16,7 +15,6 @@ struct Attribute {
 
 class Mesh : public TerreateObjectBase {
 private:
-  Str mName;
   Map<Str, Vec<Vec<Float>>> mVertexDataComponents;
   Vec<Vec<vec3>> mPositionMorphTargets;
   Vec<Vec<vec3>> mNormalMorphTargets;
@@ -34,20 +32,31 @@ private:
 public:
   Mesh() {}
 
-  Str const &GetName() const { return mName; }
   Map<Str, Vec<Vec<Float>>> const &GetVertexDataComponents() const {
     return mVertexDataComponents;
   }
   Vec<Vec<vec3>> const &GetPositionMorphTargets() const {
     return mPositionMorphTargets;
   }
+  Vec<vec3> const &GetPositionMorphTarget(Uint const &index) const {
+    return mPositionMorphTargets.at(index);
+  }
   Vec<Vec<vec3>> const &GetNormalMorphTargets() const {
     return mNormalMorphTargets;
+  }
+  Vec<vec3> const &GetNormalMorphTarget(Uint const &index) const {
+    return mNormalMorphTargets.at(index);
   }
   Vec<Vec<vec3>> const &GetTangentMorphTargets() const {
     return mTangentMorphTargets;
   }
+  Vec<vec3> const &GetTangentMorphTarget(Uint const &index) const {
+    return mTangentMorphTargets.at(index);
+  }
   Vec<Float> const &GetMorphWeights() const { return mMorphWeights; }
+  Float const &GetMorphWeight(Uint const &index) const {
+    return mMorphWeights.at(index);
+  }
   Vec<Vec<Uint>> const &GetVertexConstructionIndices() const {
     return mVertexConstructionIndices;
   }
@@ -58,7 +67,6 @@ public:
   }
   Uint const &GetMaterial() const { return mMaterial; }
 
-  void SetName(Str const &name) { mName = name; }
   void SetVertexConstructionIndices(Vec<Vec<Uint>> const &indices) {
     mVertexConstructionIndices = indices;
   }
@@ -81,6 +89,22 @@ public:
     mTangentMorphTargets.push_back(target);
   }
   void AddMorphWeight(Float const &weight) { mMorphWeights.push_back(weight); }
+};
+
+class MeshGroup : public TerreateObjectBase {
+private:
+  Str mName;
+  Vec<Mesh> mMeshes;
+
+public:
+  MeshGroup() {}
+
+  Str const &GetName() const { return mName; }
+  Vec<Mesh> const &GetMeshes() const { return mMeshes; }
+
+  void SetName(Str const &name) { mName = name; }
+
+  void AddMesh(Mesh const &mesh) { mMeshes.push_back(mesh); }
 };
 } // namespace TerreateIO::Container
 

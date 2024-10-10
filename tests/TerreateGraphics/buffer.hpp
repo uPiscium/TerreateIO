@@ -1,12 +1,15 @@
 #ifndef __TERREATE_GRAPHICS_BUFFER_HPP__
 #define __TERREATE_GRAPHICS_BUFFER_HPP__
 
+#include "compute.hpp"
 #include "defines.hpp"
+#include "exceptions.hpp"
 #include "globj.hpp"
 #include "shader.hpp"
 
 namespace TerreateGraphics::Core {
 using namespace TerreateGraphics::Defines;
+using namespace TerreateGraphics::Compute;
 using namespace TerreateGraphics::GL;
 
 struct AttributeData {
@@ -229,6 +232,134 @@ public:
     }
     return flat;
   }
+};
+
+class UniformBuffer : public TerreateObjectBase {
+private:
+  GLObject mUBO = GLObject();
+
+private:
+  void Bind() const { glBindBuffer(GL_UNIFORM_BUFFER, mUBO); }
+  void Unbind() const { glBindBuffer(GL_UNIFORM_BUFFER, 0); }
+
+public:
+  UniformBuffer() { glGenBuffers(1, mUBO); }
+  ~UniformBuffer() override;
+
+  template <typename T>
+  void LoadData(T const &data,
+                BufferUsage const &usage = BufferUsage::STATIC_DRAW) {
+    this->Bind();
+    glBufferData(GL_UNIFORM_BUFFER, sizeof(T), &data, (GLenum)usage);
+    this->Unbind();
+  }
+  template <typename T>
+  void LoadData(Vec<T> const &data,
+                BufferUsage const &usage = BufferUsage::STATIC_DRAW) {
+    this->Bind();
+    glBufferData(GL_UNIFORM_BUFFER, data.size() * sizeof(T), data.data(),
+                 (GLenum)usage);
+    this->Unbind();
+  }
+  template <typename T>
+  void ReloadData(T const &data, Ulong const &offset = 0u) {
+    this->Bind();
+    glBufferSubData(GL_UNIFORM_BUFFER, offset, sizeof(T), &data);
+    this->Unbind();
+  }
+  template <typename T>
+  void ReloadData(Vec<T> const &data, Ulong const &offset = 0u) {
+    this->Bind();
+    glBufferSubData(GL_UNIFORM_BUFFER, offset, data.size() * sizeof(T),
+                    data.data());
+    this->Unbind();
+  }
+  void Allocate(Ulong const &size,
+                BufferUsage const &usage = BufferUsage::STATIC_DRAW);
+
+  void Bind(Shader const &shader, Str const &name) const;
+};
+
+class ShaderStorageBuffer : public TerreateObjectBase {
+private:
+  GLObject mSSBO = GLObject();
+  Size mSize = 0u;
+
+private:
+  void Bind() const { glBindBuffer(GL_SHADER_STORAGE_BUFFER, mSSBO); }
+  void Unbind() const { glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0); }
+
+public:
+  ShaderStorageBuffer() { glGenBuffers(1, mSSBO); }
+  ~ShaderStorageBuffer() override;
+
+  Size const &GetSize() const { return mSize; }
+  template <typename T> void GetData(T &data, Ulong const &offset = 0u) const {
+    if (mSize == 0u) {
+      return;
+    }
+
+    if (mSize > sizeof(T)) {
+      throw Exceptions::BufferError("Data size is too small.");
+    }
+
+    this->Bind();
+    glGetBufferSubData(GL_SHADER_STORAGE_BUFFER, offset, mSize, &data);
+    this->Unbind();
+  }
+  template <typename T>
+  void GetData(Vec<T> &data, Ulong const &offset = 0u) const {
+    if (mSize == 0u) {
+      return;
+    }
+
+    if (mSize % sizeof(T) != 0) {
+      throw Exceptions::BufferError("Data size is not a multiple of T.");
+    }
+
+    data.resize(mSize / sizeof(T));
+    this->Bind();
+    glGetBufferSubData(GL_SHADER_STORAGE_BUFFER, offset, mSize, data.data());
+    this->Unbind();
+  }
+
+  template <typename T>
+  void LoadData(T const &data,
+                BufferUsage const &usage = BufferUsage::STATIC_DRAW) {
+    this->Bind();
+    glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(T), &data, (GLenum)usage);
+    mSize = sizeof(T);
+    this->Unbind();
+  }
+  template <typename T>
+  void LoadData(Vec<T> const &data,
+                BufferUsage const &usage = BufferUsage::STATIC_DRAW) {
+    this->Bind();
+    glBufferData(GL_SHADER_STORAGE_BUFFER, data.size() * sizeof(T), data.data(),
+                 (GLenum)usage);
+    mSize = data.size() * sizeof(T);
+    this->Unbind();
+  }
+  template <typename T>
+  void ReloadData(T const &data, Ulong const &offset = 0u) {
+    this->Bind();
+    glBufferSubData(GL_SHADER_STORAGE_BUFFER, offset, sizeof(T), &data);
+    mSize = sizeof(T);
+    this->Unbind();
+  }
+  template <typename T>
+  void ReloadData(Vec<T> const &data, Ulong const &offset = 0u) {
+    this->Bind();
+    glBufferSubData(GL_SHADER_STORAGE_BUFFER, offset, data.size() * sizeof(T),
+                    data.data());
+    mSize = data.size() * sizeof(T);
+    this->Unbind();
+  }
+
+  void Allocate(Ulong const &size,
+                BufferUsage const &usage = BufferUsage::STATIC_DRAW);
+  void Bind(Shader &shader, Str const &name) const;
+  void Bind(ComputeKernel &kernel, Str const &name) const;
 };
 } // namespace TerreateGraphics::Core
 

@@ -33,8 +33,14 @@ endfunction()
 function(build)
   add_library(
     ${PROJECT_NAME} STATIC
-    container/animation.cpp container/material.cpp container/mesh.cpp
-    container/skeleton.cpp importer/gltf.cpp)
+    buffer.cpp
+    container/animation.cpp
+    container/material.cpp
+    container/mesh.cpp
+    container/skeleton.cpp
+    io/gltf.cpp
+    io/interface.cpp
+    io/json.cpp)
   set_target_properties(
     ${PROJECT_NAME} PROPERTIES ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib
                                LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)

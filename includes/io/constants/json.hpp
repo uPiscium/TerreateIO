@@ -1,0 +1,16 @@
+#ifndef __TERREATEIO_IO_CONSTANTS_JSON_HPP__
+#define __TERREATEIO_IO_CONSTANTS_JSON_HPP__
+
+namespace TerreateIO::JSON {
+
+enum class JSONType {
+  NULLTYPE,
+  BOOLTYPE,
+  NUMBERTYPE,
+  STRINGTYPE,
+  ARRAYTYPE,
+  OBJECTTYPE
+};
+} // namespace TerreateIO::JSON
+
+#endif // __TERREATEIO_IO_CONSTANTS_JSON_HPP__

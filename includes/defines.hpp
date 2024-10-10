@@ -31,6 +31,52 @@ enum class InterpolationType {
   STEP,
   // CUBIC_SPLINE // TODO: Implement cubic spline interpolation
 };
+
+enum class MaterialConstant {
+  ALPHA,
+  EMITTANCE,
+  DISCARD,
+  NORMAL_SCALE,
+  OCCLUSION_STRENGTH,
+  METALLIC,
+  ROUGHNESS,
+  REFRACTION
+};
+
+enum class MaterialColor { AMBIENT, DIFFUSE, SPECULAR, EMISSION, BASE };
+
+enum class MaterialTexture {
+  AMBIENT,
+  DIFFUSE,
+  SPECULAR,
+  EMISSION,
+  NORMAL,
+  OCCLUSION,
+  BASE_COLOR,
+  METALLIC,
+  ROUGHNESS,
+  METALLIC_ROUGHNESS
+};
+
+// Used to specify the alpha mode of a material
+enum class AlphaMode { OPAQUE, MASK, BLEND };
+
+// Used to specify the texture filter
+enum class TextureFilter {
+  NEAREST = 9728,
+  LINEAR = 9729,
+  NEAREST_MIPMAP_NEAREST = 9984,
+  LINEAR_MIPMAP_NEAREST = 9985,
+  NEAREST_MIPMAP_LINEAR = 9986,
+  LINEAR_MIPMAP_LINEAR = 9987
+};
+
+// Used to specify the texture wrapping
+enum class TextureWrapping {
+  CLAMP_TO_EDGE = 33071,
+  MIRRORED_REPEAT = 33648,
+  REPEAT = 10497
+};
 } // namespace TerreateIO::Defines
 
 #endif // __TERREATEIO_DEFINES_HPP__

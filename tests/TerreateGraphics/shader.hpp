@@ -62,6 +62,23 @@ public:
   unsigned GetLocation(Str const &name) const {
     return glGetUniformLocation(mShaderID, name.c_str());
   }
+  /*
+   * @brief: Getter for uniform block index.
+   * @param: name: name of uniform block
+   * @return: uniform block index
+   */
+  unsigned GetUniformBlockIndex(Str const &name) const {
+    return glGetUniformBlockIndex(mShaderID, name.c_str());
+  }
+  /*
+   * @brief: Getter for shader storage block index.
+   * @param: name: name of storage block
+   * @return: storage block index
+   */
+  unsigned GetStorageBlockIndex(Str const &name) const {
+    return glGetProgramResourceIndex(mShaderID, GL_SHADER_STORAGE_BLOCK,
+                                     name.c_str());
+  }
 
   /*
    * @brief: Setter for shader Bool uniform.
@@ -77,7 +94,7 @@ public:
    * @param: value: value of uniform
    * @param: count: number of elements in array
    */
-  void SetBools(Str const &name, Bool const *value, Int const &count) const {
+  void SetBools(Str const &name, Bool const *value, Uint const &count) const {
     glUniform1iv(this->GetLocation(name), count,
                  reinterpret_cast<Int const *>(value));
   }
@@ -95,7 +112,7 @@ public:
    * @param: value: value of uniform
    * @param: count: number of elements in array
    */
-  void SetInts(Str const &name, Int const *value, Int const &count) const {
+  void SetInts(Str const &name, Int const *value, Uint const &count) const {
     glUniform1iv(this->GetLocation(name), count, value);
   }
   /*
@@ -120,7 +137,7 @@ public:
    * @param: value: value of uniform
    * @param: count: number of elements in array
    */
-  void SetFloats(Str const &name, Float const *value, Int const &count) const {
+  void SetFloats(Str const &name, Float const *value, Uint const &count) const {
     glUniform1fv(this->GetLocation(name), count, value);
   }
   /*
@@ -232,6 +249,23 @@ public:
    */
   void AddGeometryShaderSource(Str const &source) {
     mGeometryShaderSource += source;
+  }
+  /*
+   * @brief: This function binds uniform block index to binding point.
+   * @param: name: name of uniform block
+   * @param: binding: binding point
+   */
+  void BindUniformBlock(Str const &name, Uint const &binding) const {
+    glUniformBlockBinding(mShaderID, this->GetUniformBlockIndex(name), binding);
+  }
+  /*
+   * @brief: This function binds storage block index to binding point.
+   * @param: name: name of storage block
+   * @param: binding: binding point
+   */
+  void BindStorageBlock(Str const &name, Uint const &binding) const {
+    glShaderStorageBlockBinding(mShaderID, this->GetStorageBlockIndex(name),
+                                binding);
   }
   /*
    * @brief: This function swiches blending on or off.

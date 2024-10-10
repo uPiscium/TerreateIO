@@ -4,6 +4,7 @@
 #include "../defines.hpp"
 #include "animation.hpp"
 #include "camera.hpp"
+#include "material.hpp"
 #include "mesh.hpp"
 
 namespace TerreateIO::Container {
@@ -42,29 +43,34 @@ public:
 class Scene : public TerreateObjectBase {
 private:
   Str mName;
-  Vec<Mesh> mMeshes;
+  Vec<MeshGroup> mMeshes;
   Vec<Stage> mStages;
   Vec<Animation> mAnimations;
+  Vec<Material> mMaterials;
 
 public:
   Scene() = default;
   Scene(Scene const &scene) = default;
 
   Str const &GetName() const { return mName; }
-  Vec<Mesh> const &GetMeshes() const { return mMeshes; }
+  Vec<MeshGroup> const &GetMeshes() const { return mMeshes; }
   Vec<Animation> const &GetAnimations() const { return mAnimations; }
   Vec<Stage> const &GetStages() const { return mStages; }
+  Vec<Material> const &GetMaterials() const { return mMaterials; }
 
   void SetName(Str const &name) { mName = name; }
 
-  void AddMesh(Mesh const &mesh) { mMeshes.push_back(mesh); }
+  void AddMesh(MeshGroup const &mesh) { mMeshes.push_back(mesh); }
   void AddStage(Stage const &stage) { mStages.push_back(stage); }
   void AddAnimation(Animation const &animation) {
     mAnimations.push_back(animation);
   }
+  void AddMaterial(Material const &material) { mMaterials.push_back(material); }
 
-  Mesh const &operator[](Uint const &index) const { return mMeshes[index]; }
-  Mesh &operator[](Uint const &index) { return mMeshes[index]; }
+  MeshGroup const &operator[](Uint const &index) const {
+    return mMeshes[index];
+  }
+  MeshGroup &operator[](Uint const &index) { return mMeshes[index]; }
   Scene &operator=(Scene const &scene) = default;
 };
 } // namespace TerreateIO::Container

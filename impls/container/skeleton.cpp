@@ -33,7 +33,7 @@ Joint &Joint::operator=(Joint const &other) {
 
 Vec<mat4> Skeleton::Update(Vec<mat4> const &animationFrame) {
   if (animationFrame.size() != mJoints.size()) {
-    throw Exception::ModelException("Invalid number of poses");
+    throw Exception::ContainerException("Invalid number of poses");
   }
 
   Vec<mat4> transforms(mJoints.size());

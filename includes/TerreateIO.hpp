@@ -10,6 +10,6 @@
 #include "container/scene.hpp"
 #include "container/skeleton.hpp"
 
-#include "importer/gltf.hpp"
+#include "io/gltf.hpp"
 
 #endif // __TEERREATEIO_HPP__

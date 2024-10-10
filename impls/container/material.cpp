@@ -1,4 +1,5 @@
 #include "../../includes/container/material.hpp"
+#include "../../includes/exceptions.hpp"
 
 namespace TerreateIO::Container {
 using namespace TerreateIO::Defines;
@@ -41,6 +42,7 @@ Texture::~Texture() {
 }
 
 Texture &Texture::operator=(Texture const &texture) {
+  TerreateObjectBase::operator=(texture);
   if (data != nullptr) {
     delete[] data;
     data = nullptr;
@@ -57,6 +59,7 @@ Texture &Texture::operator=(Texture const &texture) {
 }
 
 Texture &Texture::operator=(Texture &&texture) {
+  TerreateObjectBase::operator=(texture);
   if (data != nullptr) {
     delete[] data;
     data = nullptr;
@@ -75,150 +78,164 @@ Texture &Texture::operator=(Texture &&texture) {
   return *this;
 }
 
-PBR::PBR(PBR const &pbr) {
-  metallic = pbr.metallic;
-  roughness = pbr.roughness;
-  refraction = pbr.refraction;
-
-  baseColorTexture = pbr.baseColorTexture;
-  metallicTexture = pbr.metallicTexture;
-  roughnessTexture = pbr.roughnessTexture;
-  metallicRoughnessTexture = pbr.metallicRoughnessTexture;
-}
-
-PBR::PBR(PBR &&pbr) {
-  metallic = pbr.metallic;
-  roughness = pbr.roughness;
-  refraction = pbr.refraction;
-
-  baseColorTexture = std::move(pbr.baseColorTexture);
-  metallicTexture = std::move(pbr.metallicTexture);
-  roughnessTexture = std::move(pbr.roughnessTexture);
-  metallicRoughnessTexture = std::move(pbr.metallicRoughnessTexture);
-}
-
-PBR &PBR::operator=(PBR const &pbr) {
-  metallic = pbr.metallic;
-  roughness = pbr.roughness;
-  refraction = pbr.refraction;
-
-  baseColorTexture = pbr.baseColorTexture;
-  metallicTexture = pbr.metallicTexture;
-  roughnessTexture = pbr.roughnessTexture;
-  metallicRoughnessTexture = pbr.metallicRoughnessTexture;
-
-  return *this;
-}
-
-PBR &PBR::operator=(PBR &&pbr) {
-  metallic = pbr.metallic;
-  roughness = pbr.roughness;
-  refraction = pbr.refraction;
-
-  baseColorTexture = std::move(pbr.baseColorTexture);
-  metallicTexture = std::move(pbr.metallicTexture);
-  roughnessTexture = std::move(pbr.roughnessTexture);
-  metallicRoughnessTexture = std::move(pbr.metallicRoughnessTexture);
-
-  return *this;
-}
-
 Material::Material(Material const &material) {
   mMaterialName = material.mMaterialName;
   mDoubleSide = material.mDoubleSide;
-  mPBR = material.mPBR;
+  mAlphaMode = material.mAlphaMode;
 
-  mAlpha = material.mAlpha;
-  mEmittance = material.mEmittance;
-  mDiscard = material.mDiscard;
-
-  mAmbientColor = material.mAmbientColor;
-  mDiffuseColor = material.mDiffuseColor;
-  mSpecularColor = material.mSpecularColor;
-  mEmissiveColor = material.mEmissiveColor;
-
-  mAmbientTexture = material.mAmbientTexture;
-  mDiffuseTexture = material.mDiffuseTexture;
-  mSpecularTexture = material.mSpecularTexture;
-  mEmissiveTexture = material.mEmissiveTexture;
-  mNormalTexture = material.mNormalTexture;
-  mOcclusionTexture = material.mOcclusionTexture;
-
-  mPBRData = material.mPBRData;
+  mMaterialConstants = material.mMaterialConstants;
+  mMaterialColors = material.mMaterialColors;
+  mMaterialTextures = material.mMaterialTextures;
+  mUVBindings = material.mUVBindings;
 }
 
 Material::Material(Material &&material) {
   mMaterialName = material.mMaterialName;
   mDoubleSide = material.mDoubleSide;
-  mPBR = material.mPBR;
+  mAlphaMode = material.mAlphaMode;
 
-  mAlpha = material.mAlpha;
-  mEmittance = material.mEmittance;
-  mDiscard = material.mDiscard;
+  mMaterialConstants = std::move(material.mMaterialConstants);
+  mMaterialColors = std::move(material.mMaterialColors);
+  mMaterialTextures = std::move(material.mMaterialTextures);
+  mUVBindings = std::move(material.mUVBindings);
+}
 
-  mAmbientColor = material.mAmbientColor;
-  mDiffuseColor = material.mDiffuseColor;
-  mSpecularColor = material.mSpecularColor;
-  mEmissiveColor = material.mEmissiveColor;
+Vec<Double> Material::GetConstants() const {
+  Vec<Double> constants;
+  for (auto const &constant : mMaterialConstants) {
+    constants.push_back(constant.second);
+  }
+  return constants;
+}
 
-  mAmbientTexture = std::move(material.mAmbientTexture);
-  mDiffuseTexture = std::move(material.mDiffuseTexture);
-  mSpecularTexture = std::move(material.mSpecularTexture);
-  mEmissiveTexture = std::move(material.mEmissiveTexture);
-  mNormalTexture = std::move(material.mNormalTexture);
-  mOcclusionTexture = std::move(material.mOcclusionTexture);
+Vec<Color> Material::GetColors() const {
+  Vec<Color> colors;
+  for (auto const &color : mMaterialColors) {
+    colors.push_back(color.second);
+  }
+  return colors;
+}
 
-  mPBRData = std::move(material.mPBRData);
+Vec<Texture> Material::GetTextures() const {
+  Vec<Texture> textures;
+  for (auto const &texture : mMaterialTextures) {
+    textures.push_back(texture.second);
+  }
+  return textures;
+}
+
+void Material::SetConstant(MaterialConstant const &constant,
+                           Double const &value) {
+  if (this->HasConstant(constant)) {
+    mMaterialConstants[constant] = value;
+  } else {
+    mMaterialConstants.insert({constant, value});
+  }
+}
+
+void Material::SetColor(MaterialColor const &color, Color const &value) {
+  if (this->HasColor(color)) {
+    mMaterialColors[color] = value;
+  } else {
+    mMaterialColors.insert({color, value});
+  }
+}
+
+void Material::SetTexture(MaterialTexture const &texture,
+                          Texture const &value) {
+  if (mMaterialTextures.contains(texture)) {
+    mMaterialTextures[texture] = value;
+  } else {
+    mMaterialTextures.insert({texture, value});
+  }
+}
+
+void Material::AddUVBinding(MaterialTexture const &type, Str const &binding) {
+  if (mUVBindings.find(type) == mUVBindings.end()) {
+    mUVBindings.insert({type, binding});
+  } else {
+    mUVBindings[type] = binding;
+  }
+}
+
+Double &Material::operator[](MaterialConstant const &constant) {
+  if (mMaterialConstants.contains(constant)) {
+    return mMaterialConstants[constant];
+  } else {
+    throw Exception::ContainerException(
+        "Material does not contain the specified constant");
+  }
+}
+
+Color &Material::operator[](MaterialColor const &color) {
+  if (mMaterialColors.contains(color)) {
+    return mMaterialColors[color];
+  } else {
+    throw Exception::ContainerException(
+        "Material does not contain the specified color");
+  }
+}
+
+Texture &Material::operator[](MaterialTexture const &texture) {
+  if (mMaterialTextures.contains(texture)) {
+    return mMaterialTextures[texture];
+  } else {
+    throw Exception::ContainerException(
+        "Material does not contain the specified texture");
+  }
+}
+
+Double const &Material::operator[](MaterialConstant const &constant) const {
+  if (mMaterialConstants.contains(constant)) {
+    return mMaterialConstants.at(constant);
+  } else {
+    throw Exception::ContainerException(
+        "Material does not contain the specified constant");
+  }
+}
+
+Color const &Material::operator[](MaterialColor const &color) const {
+  if (mMaterialColors.contains(color)) {
+    return mMaterialColors.at(color);
+  } else {
+    throw Exception::ContainerException(
+        "Material does not contain the specified color");
+  }
+}
+
+Texture const &Material::operator[](MaterialTexture const &texture) const {
+  if (mMaterialTextures.contains(texture)) {
+    return mMaterialTextures.at(texture);
+  } else {
+    throw Exception::ContainerException(
+        "Material does not contain the specified texture");
+  }
 }
 
 Material &Material::operator=(Material const &material) {
+  TerreateObjectBase::operator=(material);
   mMaterialName = material.mMaterialName;
   mDoubleSide = material.mDoubleSide;
-  mPBR = material.mPBR;
+  mAlphaMode = material.mAlphaMode;
 
-  mAlpha = material.mAlpha;
-  mEmittance = material.mEmittance;
-  mDiscard = material.mDiscard;
-
-  mAmbientColor = material.mAmbientColor;
-  mDiffuseColor = material.mDiffuseColor;
-  mSpecularColor = material.mSpecularColor;
-  mEmissiveColor = material.mEmissiveColor;
-
-  mAmbientTexture = material.mAmbientTexture;
-  mDiffuseTexture = material.mDiffuseTexture;
-  mSpecularTexture = material.mSpecularTexture;
-  mEmissiveTexture = material.mEmissiveTexture;
-  mNormalTexture = material.mNormalTexture;
-  mOcclusionTexture = material.mOcclusionTexture;
-
-  mPBRData = material.mPBRData;
+  mMaterialConstants = material.mMaterialConstants;
+  mMaterialColors = material.mMaterialColors;
+  mMaterialTextures = material.mMaterialTextures;
+  mUVBindings = material.mUVBindings;
 
   return *this;
 }
 
 Material &Material::operator=(Material &&material) {
+  TerreateObjectBase::operator=(material);
   mMaterialName = material.mMaterialName;
   mDoubleSide = material.mDoubleSide;
-  mPBR = material.mPBR;
+  mAlphaMode = material.mAlphaMode;
 
-  mAlpha = material.mAlpha;
-  mEmittance = material.mEmittance;
-  mDiscard = material.mDiscard;
-
-  mAmbientColor = material.mAmbientColor;
-  mDiffuseColor = material.mDiffuseColor;
-  mSpecularColor = material.mSpecularColor;
-  mEmissiveColor = material.mEmissiveColor;
-
-  mAmbientTexture = std::move(material.mAmbientTexture);
-  mDiffuseTexture = std::move(material.mDiffuseTexture);
-  mSpecularTexture = std::move(material.mSpecularTexture);
-  mEmissiveTexture = std::move(material.mEmissiveTexture);
-  mNormalTexture = std::move(material.mNormalTexture);
-  mOcclusionTexture = std::move(material.mOcclusionTexture);
-
-  mPBRData = std::move(material.mPBRData);
+  mMaterialConstants = std::move(material.mMaterialConstants);
+  mMaterialColors = std::move(material.mMaterialColors);
+  mMaterialTextures = std::move(material.mMaterialTextures);
+  mUVBindings = material.mUVBindings;
 
   return *this;
 }

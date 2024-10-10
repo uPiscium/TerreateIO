@@ -5,6 +5,7 @@
 
 namespace TerreateIO::Container {
 using namespace TerreateIO::Defines;
+using namespace TerreateCore::Math;
 
 struct Color {
   Double r = 0.0;
@@ -21,11 +22,15 @@ struct Color {
   Color &operator=(Color const &color);
 };
 
-struct Texture {
+struct Texture : public TerreateObjectBase {
   Ubyte *data = nullptr;
   Uint width = 0u;
   Uint height = 0u;
   Uint channels = 0u;
+  TextureFilter minFilter = TextureFilter::NEAREST;
+  TextureFilter magFilter = TextureFilter::NEAREST;
+  TextureWrapping wrapS = TextureWrapping::REPEAT;
+  TextureWrapping wrapT = TextureWrapping::REPEAT;
 
   Texture() = default;
   Texture(Ubyte *const &textureData, Uint const &textureWidth,
@@ -40,118 +45,70 @@ struct Texture {
   Texture &operator=(Texture &&texture);
 };
 
-struct PBR {
-  Double metallic = 0.0;
-  Double roughness = 0.0;
-  Double refraction = 0.0;
-
-  Texture baseColorTexture;
-  Texture metallicTexture;
-  Texture roughnessTexture;
-  Texture metallicRoughnessTexture;
-
-  PBR() = default;
-  PBR(Double const &metallicValue, Double const &roughnessValue,
-      Double const &refractionValue)
-      : metallic(metallicValue), roughness(roughnessValue),
-        refraction(refractionValue) {}
-  PBR(PBR const &pbr);
-  PBR(PBR &&pbr);
-
-  PBR &operator=(PBR const &pbr);
-  PBR &operator=(PBR &&pbr);
-};
-
 class Material : public TerreateObjectBase {
 private:
   Str mMaterialName = "";
   Bool mDoubleSide = false;
-  Bool mPBR = false;
+  AlphaMode mAlphaMode = AlphaMode::OPAQUE;
 
-  Double mAlpha = 0.0;
-  Double mEmittance = 0.0;
-  Double mDiscard = 0.0;
-
-  Color mAmbientColor;
-  Color mDiffuseColor;
-  Color mSpecularColor;
-  Color mEmissiveColor;
-
-  Texture mAmbientTexture;
-  Texture mDiffuseTexture;
-  Texture mSpecularTexture;
-  Texture mEmissiveTexture;
-  Texture mNormalTexture;
-  Texture mOcclusionTexture;
-
-  PBR mPBRData;
+  Map<MaterialConstant, Double> mMaterialConstants;
+  Map<MaterialColor, Color> mMaterialColors;
+  Map<MaterialTexture, Texture> mMaterialTextures;
+  Map<MaterialTexture, Str> mUVBindings;
 
 public:
   Material() = default;
   Material(Str const &name) : mMaterialName(name) {}
   Material(Material const &material);
   Material(Material &&material);
-  ~Material();
+  ~Material() = default;
 
   Str const &GetMaterialName() const { return mMaterialName; }
-  Double const &GetAlpha() const { return mAlpha; }
-  Double const &GetEmittance() const { return mEmittance; }
-  Double const &GetDiscard() const { return mDiscard; }
-  Color const &GetAmbientColor() const { return mAmbientColor; }
-  Color const &GetDiffuseColor() const { return mDiffuseColor; }
-  Color const &GetSpecularColor() const { return mSpecularColor; }
-  Color const &GetEmissiveColor() const { return mEmissiveColor; }
-  Texture const &GetAmbientTexture() const { return mAmbientTexture; }
-  Texture const &GetDiffuseTexture() const { return mDiffuseTexture; }
-  Texture const &GetSpecularTexture() const { return mSpecularTexture; }
-  Texture const &GetEmissiveTexture() const { return mEmissiveTexture; }
-  Texture const &GetNormalTexture() const { return mNormalTexture; }
-  Texture const &GetOcclusionTexture() const { return mOcclusionTexture; }
-  PBR const &GetPBRData() const { return mPBRData; }
+  AlphaMode const &GetAlphaMode() const { return mAlphaMode; }
+  Double const &GetConstant(MaterialConstant const &constant) const {
+    return mMaterialConstants.at(constant);
+  }
+  Color const &GetColor(MaterialColor const &color) const {
+    return mMaterialColors.at(color);
+  }
+  Texture const &GetTexture(MaterialTexture const &texture) const {
+    return mMaterialTextures.at(texture);
+  }
+  Vec<Double> GetConstants() const;
+  Vec<Color> GetColors() const;
+  Vec<Texture> GetTextures() const;
+  Map<MaterialTexture, Str> const &GetUVBindings() const { return mUVBindings; }
+  Str const &GetUVBinding(MaterialTexture const &type) const {
+    return mUVBindings.at(type);
+  }
 
   Bool const &IsDoubleSide() const { return mDoubleSide; }
-  Bool const &IsPBR() const { return mPBR; }
 
+  Bool HasConstant(MaterialConstant const &constant) const {
+    return mMaterialConstants.contains(constant);
+  }
+  Bool HasColor(MaterialColor const &color) const {
+    return mMaterialColors.contains(color);
+  }
+  Bool HasTexture(MaterialTexture const &texture) const {
+    return mMaterialTextures.contains(texture);
+  }
+
+  void SetDoubleSide(Bool const &doubleSide) { mDoubleSide = doubleSide; }
   void SetMaterialName(Str const &name) { mMaterialName = name; }
-  void SetAlpha(Double const &alpha) { mAlpha = alpha; }
-  void SetEmittance(Double const &emittance) { mEmittance = emittance; }
-  void SetDiscard(Double const &discard) { mDiscard = discard; }
-  void SetAmbientColor(Color const &color) { mAmbientColor = color; }
-  void SetDiffuseColor(Color const &color) { mDiffuseColor = color; }
-  void SetSpecularColor(Color const &color) { mSpecularColor = color; }
-  void SetEmissiveColor(Color const &color) { mEmissiveColor = color; }
-  void SetAmbientTexture(Texture const &texture) { mAmbientTexture = texture; }
-  void SetDiffuseTexture(Texture const &texture) { mDiffuseTexture = texture; }
-  void SetSpecularTexture(Texture const &texture) {
-    mSpecularTexture = texture;
-  }
-  void SetEmissiveTexture(Texture const &texture) {
-    mEmissiveTexture = texture;
-  }
-  void SetNormalTexture(Texture const &texture) { mNormalTexture = texture; }
-  void SetOcclusionTexture(Texture const &texture) {
-    mOcclusionTexture = texture;
-  }
-  void SetPBRData(PBR const &data) { mPBRData = data; }
-  void SetAmbientTexture(Texture &&texture) {
-    mAmbientTexture = std::move(texture);
-  }
-  void SetDiffuseTexture(Texture &&texture) {
-    mDiffuseTexture = std::move(texture);
-  }
-  void SetSpecularTexture(Texture &&texture) {
-    mSpecularTexture = std::move(texture);
-  }
-  void SetEmissiveTexture(Texture &&texture) {
-    mEmissiveTexture = std::move(texture);
-  }
-  void SetNormalTexture(Texture &&texture) {
-    mNormalTexture = std::move(texture);
-  }
-  void SetOcclusionTexture(Texture &&texture) {
-    mOcclusionTexture = std::move(texture);
-  }
-  void SetPBRData(PBR &&data) { mPBRData = std::move(data); }
+  void SetAlphaMode(AlphaMode const &mode) { mAlphaMode = mode; }
+  void SetConstant(MaterialConstant const &constant, Double const &value);
+  void SetColor(MaterialColor const &color, Color const &value);
+  void SetTexture(MaterialTexture const &texture, Texture const &value);
+
+  void AddUVBinding(MaterialTexture const &type, Str const &binding);
+
+  Double &operator[](MaterialConstant const &constant);
+  Color &operator[](MaterialColor const &color);
+  Texture &operator[](MaterialTexture const &texture);
+  Double const &operator[](MaterialConstant const &constant) const;
+  Color const &operator[](MaterialColor const &color) const;
+  Texture const &operator[](MaterialTexture const &texture) const;
 
   Material &operator=(Material const &material);
   Material &operator=(Material &&material);
